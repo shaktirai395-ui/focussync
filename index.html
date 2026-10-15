@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#040710">
+  <title>FocusSync • Telegram Cloud Edition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #040710;
+      color: #f8fafc;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: contain;
+    }
+    .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .tap-scale { transition: transform 0.14s cubic-bezier(0.4, 0, 0.2, 1); }
+    .tap-scale:active { transform: scale(0.93); }
+    .bar-fill { transition: height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .progress-bar-fill { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .ring-transition { transition: stroke-dashoffset 0.35s linear; }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center selection:bg-indigo-500 selection:text-white">
+
+  <!-- Mobile App Shell -->
+  <div class="w-full max-w-md min-h-screen bg-[#060a15] flex flex-col justify-between pb-32 relative shadow-2xl border-x border-slate-800/60 overflow-x-hidden">
+
+    <!-- TOP HEADER + EXAM COUNTDOWN + TELEGRAM BOT CONTROLS -->
+    <header class="p-4 pt-4 bg-gradient-to-b from-slate-900/95 to-transparent sticky top-0 z-20 backdrop-blur-md border-b border-slate-800/60 space-y-2.5">
+      
+      <!-- Milestone Countdown Strip -->
+      <div onclick="openCountdownModal()" class="flex items-center justify-between bg-indigo-950/50 border border-indigo-500/30 rounded-xl px-3 py-1.5 cursor-pointer tap-scale">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-hourglass-half text-indigo-400 text-xs animate-spin" style="animation-duration: 6s;"></i>
+          <span id="countdown-title-display" class="text-[11px] font-bold text-indigo-200">Next Practice Test</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="countdown-days-display" class="text-xs font-extrabold text-amber-400 font-mono-num">14 Days Left</span>
+          <i class="fa-solid fa-pen text-[9px] text-slate-400"></i>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span id="level-badge" class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">LVL 1</span>
+            <span id="total-hours-badge" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">0h 0m Today</span>
+          </div>
+          <h1 class="text-xl font-extrabold tracking-tight text-white mt-0.5">Focus<span class="text-indigo-400">Sync</span></h1>
+        </div>
+
+        <!-- Right Controls: Streak + Shield + Telegram Bot -->
+        <div class="flex items-center gap-2">
+          <!-- Streak Pill -->
+          <div class="flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1.5 rounded-full">
+            <i class="fa-solid fa-fire text-amber-400 text-xs animate-pulse"></i>
+            <span id="top-streak" class="font-bold text-amber-400 text-xs">0d</span>
+          </div>
+
+          <!-- Streak Shield Pill -->
+          <button onclick="useStreakShieldToday()" class="flex items-center gap-1 bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-1.5 rounded-full tap-scale" title="Streak Freeze Shields">
+            <i class="fa-solid fa-shield-heart text-cyan-400 text-xs"></i>
+            <span id="shield-count" class="font-bold text-cyan-300 text-xs">2</span>
+          </button>
+
+          <!-- TELEGRAM BOT CONTROL BUTTON -->
+          <button onclick="openTelegramModal()" id="tg-header-btn" class="relative flex items-center gap-1.5 bg-sky-500/15 border border-sky-500/40 px-3 py-1.5 rounded-full text-sky-400 tap-scale" title="Telegram Bot Sync & Backup">
+            <i class="fa-brands fa-telegram text-sm"></i>
+            <span class="text-[11px] font-bold text-sky-300">Bot Sync</span>
+            <span id="tg-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-500 absolute -top-0.5 -right-0.5 border border-slate-900"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Thin XP Progress Bar -->
+      <div class="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+        <div id="xp-bar" class="bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 h-full progress-bar-fill" style="width: 0%"></div>
+      </div>
+    </header>
+
+    <!-- ==================== TAB 1: TODAY VIEW ==================== -->
+    <main id="view-today" class="px-4 pt-3 space-y-5 flex-1">
+
+      <!-- 7-Day Interactive Date Strip -->
+      <div id="date-ribbon" class="grid grid-cols-7 gap-1.5"></div>
+
+      <!-- Overall Daily Target Hero Card + 1-Tap Push to Telegram -->
+      <section class="glass-card rounded-2xl p-4 space-y-3 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div>
+            <span id="selected-date-label" class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-400">TODAY'S COMPLETION</span>
+            <p id="progress-text" class="text-2xl font-extrabold text-white mt-0.5">0 / 0 Goals</p>
+            <p id="motivational-sub" class="text-xs text-slate-400 mt-1">Synced with Background Timer & Telegram Bot.</p>
+          </div>
+          <div class="relative w-16 h-16 flex items-center justify-center shrink-0">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+              <path class="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8" />
+              <path id="progress-ring" class="text-indigo-500 transition-all duration-500" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" />
+            </svg>
+            <span id="progress-percent" class="absolute text-xs font-extrabold text-white">0%</span>
+          </div>
+        </div>
+
+        <!-- Quick Telegram Push Strip -->
+        <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
+          <button onclick="sendDailyReportToTelegram()" class="flex-1 bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 tap-scale">
+            <i class="fa-brands fa-telegram text-sm"></i> Send Today's Report to Bot
+          </button>
+          <button onclick="sendBackupFileToTelegram()" class="px-3 py-2 rounded-xl bg-slate-800/90 border border-slate-700 text-slate-300 text-xs font-bold flex items-center gap-1 tap-scale" title="Send JSON Backup File to Telegram">
+            <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i> Backup
+          </button>
+        </div>
+      </section>
+
+      <!-- SUBJECT-WISE MASTER PROGRESS BARS -->
+      <section class="glass-card rounded-2xl p-4 shadow-lg space-y-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-white flex items-center gap-1.5">
+              <i class="fa-solid fa-layer-group text-indigo-400"></i> Subject Study Progress
+            </h3>
+            <p class="text-[11px] text-slate-400">Auto-synced with Background Timer</p>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="openAddModal()" class="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg tap-scale">
+              + Goal
+            </button>
+            <button onclick="openSubjectGoalsModal()" class="text-[11px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-lg tap-scale">
+              Targets
+            </button>
+          </div>
+        </div>
+        <div id="subject-bars-container" class="space-y-3 pt-1"></div>
+      </section>
+
+      <!-- SPACED REPETITION (1-3-7-21 DAY) REVISION QUEUE -->
+      <section class="glass-card rounded-2xl p-4 shadow-lg space-y-3 border border-amber-500/20">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-rotate"></i> Spaced Revision Queue (1-3-7-21d)
+            </h3>
+            <p class="text-[11px] text-slate-400">Topics scheduled for active recall today</p>
+          </div>
+          <button onclick="openRevisionModal()" class="text-[11px] font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-lg tap-scale">
+            + Add Topic
+          </button>
+        </div>
+        <div id="revision-queue-list" class="space-y-2"></div>
+      </section>
+
+      <!-- Subject Filter Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" id="subject-filter-pills"></div>
+
+      <!-- Daily Goals Checklist -->
+      <section class="space-y-3" id="today-habits-list"></section>
+
+    </main>
+
+    <!-- ==================== TAB 2: STREAKS & ANALYTICS VIEW ==================== -->
+    <main id="view-analytics" class="px-4 pt-4 space-y-5 flex-1 hidden">
+
+      <div class="grid grid-cols-3 gap-2.5">
+        <div class="glass-card p-3 rounded-2xl text-center">
+          <p class="text-[10px] font-bold uppercase text-slate-400">7d Goal Rate</p>
+          <p id="stat-7d-rate" class="text-lg font-extrabold text-emerald-400 mt-0.5">0%</p>
+        </div>
+        <div class="glass-card p-3 rounded-2xl text-center">
+          <p class="text-[10px] font-bold uppercase text-slate-400">7d Study Time</p>
+          <p id="stat-7d-hours" class="text-lg font-extrabold text-indigo-400 mt-0.5">0h</p>
+        </div>
+        <div class="glass-card p-3 rounded-2xl text-center">
+          <p class="text-[10px] font-bold uppercase text-slate-400">Best Streak</p>
+          <p id="stat-best-streak" class="text-lg font-extrabold text-amber-400 mt-0.5">0d</p>
+        </div>
+      </div>
+
+      <!-- Stacked Subject Time Bar Chart (7 Days) -->
+      <section class="glass-card rounded-2xl p-4 shadow-lg">
+        <h3 class="text-sm font-bold text-white">7-Day Subject Time Breakdown</h3>
+        <p class="text-[11px] text-slate-400 mb-2">Stacked hours logged per subject</p>
+        <div class="flex flex-wrap gap-2.5 mb-3 text-[10px] font-bold">
+          <span class="flex items-center gap-1 text-indigo-400"><span class="w-2 h-2 rounded-full bg-indigo-500"></span>Physics</span>
+          <span class="flex items-center gap-1 text-cyan-400"><span class="w-2 h-2 rounded-full bg-cyan-400"></span>Chemistry</span>
+          <span class="flex items-center gap-1 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Biology</span>
+          <span class="flex items-center gap-1 text-amber-400"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Fitness</span>
+          <span class="flex items-center gap-1 text-rose-400"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Tech</span>
+        </div>
+        <div id="stacked-subject-bars" class="grid grid-cols-7 gap-2 items-end h-32 pt-4 px-1 border-b border-slate-800 pb-2"></div>
+        <div id="stacked-subject-labels" class="grid grid-cols-7 gap-2 text-center mt-2"></div>
+      </section>
+
+      <!-- Weekly Completion Bar Chart -->
+      <section class="glass-card rounded-2xl p-4 shadow-lg">
+        <div class="flex justify-between items-center mb-3">
+          <div>
+            <h3 class="text-sm font-bold text-white">Weekly Goal Completion %</h3>
+            <p class="text-[11px] text-slate-400">Daily habits hit over last 7 days</p>
+          </div>
+          <span id="weekly-avg-badge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">0% Avg</span>
+        </div>
+        <div id="weekly-bars" class="grid grid-cols-7 gap-2 items-end h-28 pt-4 px-1 border-b border-slate-800 pb-2"></div>
+        <div id="weekly-labels" class="grid grid-cols-7 gap-2 text-center mt-2"></div>
+      </section>
+
+      <!-- Interactive 7-Day Streak Matrix -->
+      <section class="glass-card rounded-2xl p-4 shadow-lg">
+        <h3 class="text-sm font-bold text-white mb-0.5">7-Day Habit Streak Grid</h3>
+        <p class="text-[11px] text-slate-400 mb-4">Tap any circle to toggle completion for past days</p>
+        <div id="streak-matrix" class="space-y-4"></div>
+      </section>
+
+    </main>
+
+    <!-- ==================== TAB 3: SILENT BACKGROUND-PROOF TIMER ==================== -->
+    <main id="view-focus" class="px-4 pt-3 space-y-4 flex-1 hidden">
+
+      <div class="glass-card rounded-3xl p-5 w-full text-center space-y-4 shadow-xl border border-slate-800/90">
+
+        <!-- Top Controls: Mode Switcher + Screen WakeLock -->
+        <div class="flex items-center justify-between gap-2">
+          <div class="inline-flex bg-slate-900 p-1 rounded-xl border border-slate-800 flex-1">
+            <button id="mode-countdown-btn" onclick="switchTimerType('countdown')" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition">Countdown</button>
+            <button id="mode-stopwatch-btn" onclick="switchTimerType('stopwatch')" class="flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-400 transition">Stopwatch</button>
+          </div>
+
+          <button id="wakelock-btn" onclick="toggleWakeLock()" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-bold text-slate-400 flex items-center gap-1.5 tap-scale" title="Keep screen awake while studying">
+            <i class="fa-solid fa-sun"></i> <span id="wakelock-text">Wake Lock</span>
+          </button>
+        </div>
+
+        <!-- Subject & Goal Selector -->
+        <div class="grid grid-cols-2 gap-2.5 text-left">
+          <div>
+            <label class="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Subject</label>
+            <select id="timer-subject-select" onchange="onTimerSubjectChange()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-indigo-500">
+              <option value="Physics">⚛️ Physics</option>
+              <option value="Chemistry">🧪 Chemistry</option>
+              <option value="Biology">🧬 Biology</option>
+              <option value="Fitness">💪 Fitness</option>
+              <option value="Tech">💻 Tech</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Auto-Sync Goal</label>
+            <select id="timer-habit-select" onchange="savePersistentTimerState()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-indigo-500">
+            </select>
+          </div>
+        </div>
+
+        <!-- Circular SVG Timer Ring -->
+        <div class="relative w-52 h-52 mx-auto flex items-center justify-center my-1">
+          <svg class="w-full h-full -rotate-90" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" stroke="rgba(30,41,59,0.9)" stroke-width="7" fill="none" />
+            <circle id="timer-svg-ring" cx="60" cy="60" r="52" stroke="#6366f1" stroke-width="7" fill="none"
+              stroke-dasharray="326.7" stroke-dashoffset="0" stroke-linecap="round" class="ring-transition" />
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span id="timer-subject-pill" class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">PHYSICS</span>
+            <div id="timer-display" class="text-4xl font-extrabold text-white font-mono-num my-1.5 tracking-tight">45:00</div>
+            <span id="timer-sub-status" class="text-[10px] text-emerald-400 font-semibold px-3">⚡ Silent BG-Safe Clock Active</span>
+          </div>
+        </div>
+
+        <!-- Custom Time Adjuster Controls -->
+        <div id="custom-time-controls" class="space-y-2.5">
+          <div class="flex items-center justify-center gap-2">
+            <button onclick="adjustCustomMinutes(-10)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 tap-scale">-10m</button>
+            <button onclick="adjustCustomMinutes(-5)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 tap-scale">-5m</button>
+            <div class="flex items-center bg-slate-900 border border-indigo-500/40 rounded-xl px-2.5 py-1">
+              <input type="number" id="custom-minutes-input" min="1" max="360" value="45" onchange="setCustomMinutesFromInput()" class="w-12 bg-transparent text-center font-extrabold text-sm text-white focus:outline-none">
+              <span class="text-[11px] font-bold text-slate-400">min</span>
+            </div>
+            <button onclick="adjustCustomMinutes(5)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 tap-scale">+5m</button>
+            <button onclick="adjustCustomMinutes(10)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 tap-scale">+10m</button>
+          </div>
+
+          <div class="flex justify-center gap-1.5 flex-wrap">
+            <button onclick="setCustomTimerMinutes(25)" class="px-2.5 py-1 rounded-lg bg-slate-800/70 text-[11px] font-semibold text-slate-300 border border-slate-700/70 tap-scale">25m Pomodoro</button>
+            <button onclick="setCustomTimerMinutes(45)" class="px-2.5 py-1 rounded-lg bg-slate-800/70 text-[11px] font-semibold text-slate-300 border border-slate-700/70 tap-scale">45m Lecture</button>
+            <button onclick="setCustomTimerMinutes(90)" class="px-2.5 py-1 rounded-lg bg-slate-800/70 text-[11px] font-semibold text-slate-300 border border-slate-700/70 tap-scale">90m Deep</button>
+            <button onclick="setCustomTimerMinutes(180)" class="px-2.5 py-1 rounded-lg bg-slate-800/70 text-[11px] font-semibold text-slate-300 border border-slate-700/70 tap-scale">180m Exam</button>
+          </div>
+        </div>
+
+        <!-- Primary Timer Action Buttons -->
+        <div class="flex items-center gap-2.5 pt-1">
+          <button id="timer-start-btn" onclick="toggleTimer()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-2xl text-sm shadow-lg shadow-indigo-600/30 tap-scale">
+            <i class="fa-solid fa-play mr-1.5"></i> Start Focus
+          </button>
+          <button id="log-partial-btn" onclick="logElapsedMinutesNow()" class="px-3.5 py-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs tap-scale">
+            <i class="fa-solid fa-check-double mr-1"></i> Log Now
+          </button>
+          <button onclick="resetTimer()" class="w-11 h-11 rounded-2xl bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center tap-scale">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Recent Subject Timer Sessions Log -->
+      <section class="glass-card rounded-2xl p-4 space-y-2.5">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-300">Today's Synced Sessions</h3>
+          <span id="today-sessions-count" class="text-[11px] font-bold text-indigo-400">0 entries</span>
+        </div>
+        <div id="session-log-list" class="space-y-2 max-h-36 overflow-y-auto no-scrollbar"></div>
+      </section>
+
+    </main>
+
+    <!-- ==================== TAB 4: MOCK TEST & SCORE TRACKER ==================== -->
+    <main id="view-tests" class="px-4 pt-4 space-y-5 flex-1 hidden">
+
+      <div class="grid grid-cols-3 gap-2.5">
+        <div class="glass-card p-3 rounded-2xl text-center">
+          <p class="text-[10px] font-bold uppercase text-slate-400">Latest Score</p>
+          <p id="test-latest-score" class="text-lg font-extrabold text-indigo-400 font-mono-num mt-0.5">0/720</p>
+        </div>
+        <div class="glass-card p-3 rounded-2xl text-center">
+          <p class="text-[10px] font-bold uppercase text-slate-400">Personal Best</p>
+          <p id="test-best-score" class="text-lg font-extrabold text-emerald-400 font-mono-num mt-0.5">0</p>
+        </div>
+        <div class="glass-card p-3 rounded-2xl text-center">
+          <p class="text-[10px] font-bold uppercase text-slate-400">Avg Score</p>
+          <p id="test-avg-score" class="text-lg font-extrabold text-amber-400 font-mono-num mt-0.5">0</p>
+        </div>
+      </div>
+
+      <section class="glass-card rounded-2xl p-4 shadow-lg">
+        <div class="flex justify-between items-center mb-3">
+          <div>
+            <h3 class="text-sm font-bold text-white">Practice Test Score Trend</h3>
+            <p class="text-[11px] text-slate-400">Auto-sends score card to Telegram Bot</p>
+          </div>
+          <button onclick="openAddTestModal()" class="text-xs font-bold bg-indigo-600 text-white px-3 py-1.5 rounded-xl tap-scale shadow-md shadow-indigo-600/30">
+            + Log Test
+          </button>
+        </div>
+        <div id="test-chart-bars" class="grid grid-cols-6 gap-2 items-end h-32 pt-4 px-1 border-b border-slate-800 pb-2"></div>
+        <div id="test-chart-labels" class="grid grid-cols-6 gap-2 text-center mt-2"></div>
+      </section>
+
+      <section class="space-y-2.5" id="test-history-list"></section>
+
+    </main>
+
+    <!-- ==================== TAB 5: CHAPTER SYLLABUS & PYQ TRACKER ==================== -->
+    <main id="view-syllabus" class="px-4 pt-4 space-y-4 flex-1 hidden">
+
+      <section class="glass-card rounded-2xl p-4 shadow-lg space-y-2">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-sm font-extrabold text-white">Master Syllabus & PYQ Tracker</h3>
+            <p class="text-[11px] text-slate-400">Tap Concept, NCERT, or PYQs as you master chapters</p>
+          </div>
+          <span id="syllabus-total-pct" class="text-sm font-extrabold text-emerald-400 font-mono-num">0%</span>
+        </div>
+        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+          <div id="syllabus-master-bar" class="bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 h-full progress-bar-fill" style="width: 0%"></div>
+        </div>
+      </section>
+
+      <div class="flex justify-between items-center gap-2">
+        <div class="flex gap-1.5 overflow-x-auto no-scrollbar" id="syllabus-subject-tabs">
+          <button onclick="setSyllabusSubject('Biology')" id="syl-tab-Biology" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 text-slate-950 tap-scale">🧬 Biology</button>
+          <button onclick="setSyllabusSubject('Physics')" id="syl-tab-Physics" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800 tap-scale">⚛️ Physics</button>
+          <button onclick="setSyllabusSubject('Chemistry')" id="syl-tab-Chemistry" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800 tap-scale">🧪 Chemistry</button>
+        </div>
+        <button onclick="promptAddChapter()" class="px-2.5 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold shrink-0 tap-scale">
+          + Chapter
+        </button>
+      </div>
+
+      <section id="syllabus-chapters-list" class="space-y-2.5"></section>
+
+    </main>
+
+    <!-- FLOATING MINI-PLAYER PILL -->
+    <div id="floating-mini-timer" class="fixed bottom-20 w-full max-w-md px-4 z-30 hidden">
+      <div class="bg-slate-900/95 backdrop-blur-xl border border-indigo-500/40 rounded-2xl p-2.5 px-4 flex items-center justify-between shadow-2xl">
+        <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('focus')">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <div>
+            <p id="mini-timer-subject" class="text-[10px] font-extrabold uppercase text-indigo-400">PHYSICS</p>
+            <p id="mini-timer-clock" class="text-sm font-extrabold text-white font-mono-num">45:00</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleTimer()" class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold tap-scale">Pause / Play</button>
+          <button onclick="logElapsedMinutesNow()" class="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold tap-scale">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5-TAB BOTTOM NAVIGATION BAR -->
+    <nav class="fixed bottom-0 w-full max-w-md bg-slate-900/95 backdrop-blur-xl border-t border-slate-800/80 px-4 py-2 flex justify-between items-center z-30">
+      <button onclick="switchTab('today')" id="nav-today" class="flex flex-col items-center gap-1 text-indigo-400 tap-scale w-14">
+        <i class="fa-solid fa-house-chimney text-base"></i>
+        <span class="text-[10px] font-bold">Today</span>
+      </button>
+
+      <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center gap-1 text-slate-400 tap-scale w-14">
+        <i class="fa-solid fa-chart-column text-base"></i>
+        <span class="text-[10px] font-semibold">Streaks</span>
+      </button>
+
+      <button onclick="switchTab('focus')" id="nav-focus" class="flex flex-col items-center gap-1 text-slate-400 tap-scale w-14">
+        <div class="w-11 h-11 -mt-5 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white shadow-xl shadow-indigo-600/40 flex items-center justify-center text-base border-2 border-slate-900">
+          <i class="fa-solid fa-stopwatch"></i>
+        </div>
+        <span class="text-[10px] font-bold text-indigo-300">Timer</span>
+      </button>
+
+      <button onclick="switchTab('tests')" id="nav-tests" class="flex flex-col items-center gap-1 text-slate-400 tap-scale w-14">
+        <i class="fa-solid fa-trophy text-base"></i>
+        <span class="text-[10px] font-semibold">Tests</span>
+      </button>
+
+      <button onclick="switchTab('syllabus')" id="nav-syllabus" class="flex flex-col items-center gap-1 text-slate-400 tap-scale w-14">
+        <i class="fa-solid fa-list-check text-base"></i>
+        <span class="text-[10px] font-semibold">Syllabus</span>
+      </button>
+    </nav>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- MODAL 1: TELEGRAM BOT API CONFIGURATOR & BACKUP -->
+    <div id="telegram-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+      <div class="bg-slate-900 border border-sky-500/40 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
+        <div class="flex justify-between items-center">
+          <h3 class="text-base font-extrabold text-white flex items-center gap-2">
+            <i class="fa-brands fa-telegram text-sky-400 text-xl"></i> Telegram Bot & Cloud
+          </h3>
+          <button onclick="closeTelegramModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Connect your Telegram Bot from <b>@BotFather</b> to receive live timer logs, daily study reports, mock test cards, and full JSON cloud backups directly in Telegram.
+        </p>
+
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[10px] font-extrabold uppercase text-sky-400 mb-1">1. Bot API Token (from @BotFather)</label>
+            <input type="password" id="tg-token-input" placeholder="123456789:ABCdefGhIJKlmNoPQRsTUV..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono-num focus:outline-none focus:border-sky-400">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-[10px] font-extrabold uppercase text-sky-400">2. Your Chat ID</label>
+              <button type="button" onclick="autoDetectTelegramChatId()" class="text-[10px] font-bold text-emerald-400 hover:underline">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Detect Chat ID
+              </button>
+            </div>
+            <input type="text" id="tg-chatid-input" placeholder="e.g., 987654321" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono-num focus:outline-none focus:border-sky-400">
+            <p class="text-[10px] text-slate-500 mt-1">Send "Hi" to your bot on Telegram first, then tap <b>Auto-Detect Chat ID</b>!</p>
+          </div>
+
+          <!-- Auto-Send Toggles -->
+          <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-3 space-y-2.5 text-xs">
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="font-semibold text-slate-200">⏱️ Auto-send Focus Timer logs</span>
+              <input type="checkbox" id="tg-auto-session" checked class="accent-sky-500 w-4 h-4">
+            </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="font-semibold text-slate-200">🏆 Auto-send Mock Test scores</span>
+              <input type="checkbox" id="tg-auto-test" checked class="accent-sky-500 w-4 h-4">
+            </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="font-semibold text-slate-200">🔥 Auto-send 100% Daily Sweep</span>
+              <input type="checkbox" id="tg-auto-sweep" checked class="accent-sky-500 w-4 h-4">
+            </label>
+          </div>
+
+          <button onclick="saveAndTestTelegramBot()" id="tg-save-btn" class="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold py-3 rounded-xl text-xs shadow-lg shadow-sky-500/25 tap-scale flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Save & Send Test Ping to Bot
+          </button>
+
+          <!-- Instant Telegram Push & Local Backup Actions -->
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800">
+            <button onclick="sendDailyReportToTelegram()" class="bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold py-2.5 rounded-xl text-[11px] border border-slate-700 tap-scale">
+              📊 Send Daily Report
+            </button>
+            <button onclick="sendBackupFileToTelegram()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold py-2.5 rounded-xl text-[11px] border border-slate-700 tap-scale">
+              ☁️ Backup to Bot
+            </button>
+            <button onclick="exportData()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-[11px] border border-slate-700 tap-scale">
+              💾 Download .JSON
+            </button>
+            <label class="bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold py-2.5 rounded-xl text-[11px] border border-slate-700 text-center cursor-pointer tap-scale">
+              📂 Restore .JSON
+              <input type="file" accept=".json" onchange="importData(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: ADD NEW GOAL -->
+    <div id="add-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-base font-extrabold text-white">Add Subject Goal</h3>
+          <button onclick="closeAddModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="add-habit-form" onsubmit="addHabit(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Goal Title</label>
+            <input type="text" id="habit-name" required placeholder="e.g., Physics Kinematics Numericals" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Subject</label>
+              <select id="habit-subject" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white">
+                <option value="Physics">⚛️ Physics</option>
+                <option value="Chemistry">🧪 Chemistry</option>
+                <option value="Biology">🧬 Biology</option>
+                <option value="Fitness">💪 Fitness</option>
+                <option value="Tech">💻 Tech</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Tracking Type</label>
+              <select id="habit-unit" onchange="onUnitTypeChange()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white">
+                <option value="mins">⏱️ Minutes (Auto-Timer)</option>
+                <option value="Qs">🧠 MCQs / Questions</option>
+                <option value="times">✅ Simple Check-off</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Daily Target</label>
+              <input type="number" id="habit-target" min="1" max="600" value="60" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-bold">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Icon</label>
+              <select id="habit-icon" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-white">
+                <option value="fa-atom">⚛️ Atom / Physics</option>
+                <option value="fa-flask">🧪 Lab / Chem</option>
+                <option value="fa-dna">🧬 DNA / Bio</option>
+                <option value="fa-brain">🧠 MCQs / Practice</option>
+                <option value="fa-dumbbell">🏋️ Workout</option>
+                <option value="fa-code">💻 Code / Tech</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm shadow-lg shadow-indigo-600/30 tap-scale">
+            Create Goal
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: LOG MOCK TEST SCORE -->
+    <div id="add-test-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-base font-extrabold text-white">Log Practice / Mock Test</h3>
+          <button onclick="closeAddTestModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form onsubmit="saveMockTest(event)" class="space-y-3">
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Test Name</label>
+            <input type="text" id="test-name-input" required placeholder="e.g., PT-06 / Intensive Mock 1" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white">
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-indigo-400 mb-1">Physics (180)</label>
+              <input type="number" id="test-phy-input" min="0" max="180" value="145" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-sm font-bold text-white">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-cyan-400 mb-1">Chem (180)</label>
+              <input type="number" id="test-chem-input" min="0" max="180" value="150" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-sm font-bold text-white">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-emerald-400 mb-1">Bio (360)</label>
+              <input type="number" id="test-bio-input" min="0" max="360" value="325" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-sm font-bold text-white">
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm tap-scale">
+            Save & Push Score to Telegram
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: ADD SPACED REVISION TOPIC -->
+    <div id="revision-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-base font-extrabold text-white">Add Topic to 1-3-7-21d Queue</h3>
+          <button onclick="closeRevisionModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form onsubmit="addRevisionTopic(event)" class="space-y-3">
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Topic / Sub-chapter Studied</label>
+            <input type="text" id="rev-topic-input" required placeholder="e.g., Bohr Model / Krebs Cycle" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Subject</label>
+            <select id="rev-subject-input" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white">
+              <option value="Biology">🧬 Biology</option>
+              <option value="Physics">⚛️ Physics</option>
+              <option value="Chemistry">🧪 Chemistry</option>
+            </select>
+          </div>
+          <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-2.5 rounded-xl text-sm tap-scale">
+            Schedule Active Recall
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: EDIT COUNTDOWN BANNER -->
+    <div id="countdown-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-base font-extrabold text-white">Set Exam / Milestone Target</h3>
+          <button onclick="closeCountdownModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form onsubmit="saveCountdownSettings(event)" class="space-y-3">
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Exam / Event Title</label>
+            <input type="text" id="cd-title-input" required placeholder="e.g., Term Exam / Mock Test" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Target Date</label>
+            <input type="date" id="cd-date-input" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
+          </div>
+          <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl text-sm tap-scale">Save Countdown</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: EDIT DAILY SUBJECT MINUTE TARGETS -->
+    <div id="subject-goals-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-base font-extrabold text-white">Daily Subject Targets (Mins)</h3>
+          <button onclick="closeSubjectGoalsModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="subject-targets-inputs" class="space-y-3"></div>
+        <button onclick="saveSubjectTargets()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm tap-scale">
+          Save Targets
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function vibrate(ms = 18) {
+      if (navigator.vibrate) navigator.vibrate(ms);
+    }
+
+    // ==================== TELEGRAM BOT API ENGINE ====================
+    let tgConfig = JSON.parse(localStorage.getItem('focussync_tg_config')) || {
+      botToken: '',
+      chatId: '',
+      autoSession: true,
+      autoTest: true,
+      autoSweep: true
+    };
+
+    function updateTelegramStatusIndicator() {
+      const dot = document.getElementById('tg-status-dot');
+      if (tgConfig.botToken && tgConfig.chatId) {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 border border-slate-900 shadow-sm shadow-emerald-400';
+      } else {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-500 absolute -top-0.5 -right-0.5 border border-slate-900';
+      }
+    }
+
+    function openTelegramModal() {
+      vibrate(15);
+      document.getElementById('tg-token-input').value = tgConfig.botToken || '';
+      document.getElementById('tg-chatid-input').value = tgConfig.chatId || '';
+      document.getElementById('tg-auto-session').checked = tgConfig.autoSession !== false;
+      document.getElementById('tg-auto-test').checked = tgConfig.autoTest !== false;
+      document.getElementById('tg-auto-sweep').checked = tgConfig.autoSweep !== false;
+      document.getElementById('telegram-modal').classList.replace('hidden', 'flex');
+    }
+
+    function closeTelegramModal() {
+      document.getElementById('telegram-modal').classList.replace('flex', 'hidden');
+    }
+
+    function makeTextBar(pct) {
+      const filled = Math.round(Math.min(100, Math.max(0, pct)) / 10);
+      return `[${'█'.repeat(filled)}${'░'.repeat(10 - filled)}]`;
+    }
+
+    async function autoDetectTelegramChatId() {
+      const token = document.getElementById('tg-token-input').value.trim();
+      if (!token) {
+        alert('Please paste your Bot Token from @BotFather first!');
+        return;
+      }
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${token}/getUpdates`);
+        const data = await res.json();
+        if (!data.ok) {
+          alert('Invalid Bot Token! Please check the token from @BotFather.');
+          return;
+        }
+        const updates = data.result || [];
+        if (updates.length === 0) {
+          alert('No messages found yet! Open your bot in Telegram, send it a "Hi" message, and tap Auto-Detect again.');
+          return;
+        }
+        const lastMsg = updates[updates.length - 1];
+        const chat = (lastMsg.message && lastMsg.message.chat) || (lastMsg.my_chat_member && lastMsg.my_chat_member.chat);
+        if (chat && chat.id) {
+          document.getElementById('tg-chatid-input').value = chat.id;
+          vibrate([30, 50]);
+          alert(`✅ Detected Chat ID: ${chat.id} (${chat.first_name || chat.title || 'User'})`);
+        } else {
+          alert('Send a normal text message "Hi" to your bot on Telegram first, then tap Auto-Detect.');
+        }
+      } catch (e) {
+        alert('Network error while contacting Telegram API. Check your internet connection.');
+      }
+    }
+
+    async function sendTelegramMessage(htmlText, silent = false) {
+      if (!tgConfig.botToken || !tgConfig.chatId) return false;
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${tgConfig.botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: tgConfig.chatId,
+            text: htmlText,
+            parse_mode: 'HTML'
+          })
+        });
+        const data = await res.json();
+        return data.ok;
+      } catch (err) {
+        if (!silent) console.warn('Telegram send failed:', err);
+        return false;
+      }
+    }
+
+    async function saveAndTestTelegramBot() {
+      const btn = document.getElementById('tg-save-btn');
+      tgConfig.botToken = document.getElementById('tg-token-input').value.trim();
+      tgConfig.chatId = document.getElementById('tg-chatid-input').value.trim();
+      tgConfig.autoSession = document.getElementById('tg-auto-session').checked;
+      tgConfig.autoTest = document.getElementById('tg-auto-test').checked;
+      tgConfig.autoSweep = document.getElementById('tg-auto-sweep').checked;
+
+      localStorage.setItem('focussync_tg_config', JSON.stringify(tgConfig));
+      updateTelegramStatusIndicator();
+
+      if (!tgConfig.botToken || !tgConfig.chatId) {
+        alert('Saved! Enter both Bot Token and Chat ID to enable live messages.');
+        return;
+      }
+
+      btn.innerText = 'Sending Test Ping...';
+      const ok = await sendTelegramMessage(
+        `🚀 <b>FocusSync Connected!</b>\n📅 <b>Date:</b> ${todayISO}\n⚡ Live study sessions, mock test cards, and daily reports will now sync here automatically!`
+      );
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Save & Send Test Ping to Bot';
+
+      if (ok) {
+        vibrate([40, 60]);
+        alert('🎉 Test message delivered! Check your Telegram bot chat.');
+        closeTelegramModal();
+      } else {
+        alert('❌ Could not send message. Verify your Bot Token and Chat ID, and make sure you pressed "Start" on your bot in Telegram.');
+      }
+    }
+
+    async function sendDailyReportToTelegram(isAutoSweep = false) {
+      vibrate(20);
+      if (!tgConfig.botToken || !tgConfig.chatId) {
+        if (!isAutoSweep) openTelegramModal();
+        return;
+      }
+
+      const todaySubLog = appState.subjectMinutesLog[todayISO] || {};
+      const todayTotalMins = Object.values(todaySubLog).reduce((a, b) => a + b, 0);
+      const hrs = Math.floor(todayTotalMins / 60);
+      const mins = todayTotalMins % 60;
+
+      const doneGoals = appState.habits.filter(h => isGoalDone(h, todayISO)).length;
+      const totalGoals = appState.habits.length;
+      const pctGoals = totalGoals ? Math.round((doneGoals / totalGoals) * 100) : 0;
+      const bestStreak = appState.habits.reduce((max, h) => Math.max(max, calculateStreak(h)), 0);
+
+      let subLines = '';
+      Object.keys(SUBJECTS).forEach(sub => {
+        const m = todaySubLog[sub] || 0;
+        const t = appState.subjectTargets[sub] || 60;
+        const p = Math.min(100, Math.round((m / t) * 100));
+        subLines += `${SUBJECTS[sub].emoji} <b>${sub}:</b> <code>${makeTextBar(p)}</code> ${m}/${t}m (${p}%)\n`;
+      });
+
+      const dueRevs = (appState.revisions || []).filter(r => r.nextDueDate <= todayISO).length;
+
+      const msg =
+        `${isAutoSweep ? '🏆 <b>100% DAILY SWEEP UNLOCKED!</b>' : '📊 <b>FocusSync Daily Study Report</b>'}\n` +
+        `📅 <b>Date:</b> ${todayISO}\n` +
+        `🔥 <b>Current Streak:</b> ${bestStreak} Days\n` +
+        `⏱️ <b>Total Study Time:</b> ${hrs}h ${mins}m\n` +
+        `🎯 <b>Daily Goals Hit:</b> ${doneGoals} / ${totalGoals} (${pctGoals}%)\n\n` +
+        `<b>📚 Subject Progress:</b>\n${subLines}\n` +
+        `🧠 <b>Active Recall Pending:</b> ${dueRevs} Topics`;
+
+      const ok = await sendTelegramMessage(msg);
+      if (!isAutoSweep) {
+        if (ok) alert('✅ Daily Study Report sent to your Telegram!');
+        else alert('❌ Failed to send report. Check your Telegram Bot settings.');
+      }
+    }
+
+    async function sendBackupFileToTelegram() {
+      vibrate(25);
+      if (!tgConfig.botToken || !tgConfig.chatId) {
+        openTelegramModal();
+        return;
+      }
+
+      try {
+        const jsonString = JSON.stringify(appState, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const formData = new FormData();
+        formData.append('chat_id', tgConfig.chatId);
+        formData.append('document', blob, `focussync_backup_${todayISO}.json`);
+        formData.append('caption', `☁️ FocusSync Full Cloud Backup (${todayISO})\nSave this file to restore your streaks, mock tests, and syllabus anytime!`);
+
+        const res = await fetch(`https://api.telegram.org/bot${tgConfig.botToken}/sendDocument`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert('☁️ Full .JSON Backup file sent directly to your Telegram chat!');
+        } else {
+          alert('❌ Failed to upload backup file to Telegram.');
+        }
+      } catch (e) {
+        alert('❌ Network error sending backup file.');
+      }
+    }
+
+    // ==================== CORE DATA & SUBJECTS ====================
+    const SUBJECTS = {
+      Physics:   { label: 'Physics',   emoji: '⚛️', color: 'indigo', hex: '#6366f1', bg: 'bg-indigo-500', soft: 'bg-indigo-500/15', text: 'text-indigo-400', border: 'border-indigo-500/30' },
+      Chemistry: { label: 'Chemistry', emoji: '🧪', color: 'cyan',   hex: '#22d3ee', bg: 'bg-cyan-400',   soft: 'bg-cyan-500/15',   text: 'text-cyan-400',   border: 'border-cyan-500/30' },
+      Biology:   { label: 'Biology',   emoji: '🧬', color: 'emerald',hex: '#10b981', bg: 'bg-emerald-500',soft: 'bg-emerald-500/15',text: 'text-emerald-400',border: 'border-emerald-500/30' },
+      Fitness:   { label: 'Fitness',   emoji: '💪', color: 'amber',  hex: '#f59e0b', bg: 'bg-amber-500',  soft: 'bg-amber-500/15',  text: 'text-amber-400',  border: 'border-amber-500/30' },
+      Tech:      { label: 'Tech',      emoji: '💻', color: 'rose',   hex: '#f43f5e', bg: 'bg-rose-500',   soft: 'bg-rose-500/15',   text: 'text-rose-400',   border: 'border-rose-500/30' }
+    };
+
+    function getPastDates(numDays) {
+      const dates = [];
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      for (let i = numDays - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const iso = `${y}-${m}-${day}`;
+        dates.push({ iso, shortDay: dayNames[d.getDay()], dateNum: d.getDate(), isToday: i === 0 });
+      }
+      return dates;
+    }
+
+    const last7Days = getPastDates(7);
+    const todayISO = last7Days[6].iso;
+    let selectedDateISO = todayISO;
+    let activeSubjectFilter = 'All';
+    let activeSyllabusSubject = 'Biology';
+    let currentTab = 'today';
+
+    const STORAGE_KEY = 'focussync_v6_main_data';
+
+    function getDefaultState() {
+      const d = last7Days;
+      const defaultExamDate = new Date();
+      defaultExamDate.setDate(defaultExamDate.getDate() + 14);
+
+      return {
+        countdown: {
+          title: 'Next Practice / Term Test',
+          targetDate: defaultExamDate.toISOString().split('T')[0]
+        },
+        streakShields: 2,
+        frozenDates: {},
+        subjectTargets: { Physics: 90, Chemistry: 60, Biology: 90, Fitness: 30, Tech: 30 },
+        subjectMinutesLog: {
+          [d[0].iso]: { Physics: 80, Chemistry: 60, Biology: 90, Fitness: 30, Tech: 20 },
+          [d[1].iso]: { Physics: 90, Chemistry: 45, Biology: 75, Fitness: 30, Tech: 0 },
+          [d[2].iso]: { Physics: 60, Chemistry: 60, Biology: 90, Fitness: 0,  Tech: 30 },
+          [d[3].iso]: { Physics: 90, Chemistry: 60, Biology: 90, Fitness: 30, Tech: 30 },
+          [d[4].iso]: { Physics: 70, Chemistry: 50, Biology: 60, Fitness: 30, Tech: 15 },
+          [d[5].iso]: { Physics: 90, Chemistry: 60, Biology: 90, Fitness: 30, Tech: 25 },
+          [d[6].iso]: { Physics: 45, Chemistry: 30, Biology: 60, Fitness: 0,  Tech: 0 }
+        },
+        sessions: [
+          { time: 'Morning', subject: 'Biology', mins: 60, date: todayISO },
+          { time: 'Morning', subject: 'Physics', mins: 45, date: todayISO }
+        ],
+        revisions: [
+          { id: 101, topic: 'Cell Cycle & Mitosis Diagrams', subject: 'Biology', stageIdx: 1, intervals: [1, 3, 7, 21], nextDueDate: todayISO },
+          { id: 102, topic: 'Kinematics Projectile Formulas', subject: 'Physics', stageIdx: 2, intervals: [1, 3, 7, 21], nextDueDate: todayISO }
+        ],
+        mockTests: [
+          { id: 201, name: 'Practice Test 01', date: d[0].iso, phy: 125, chem: 130, bio: 295, total: 550 },
+          { id: 202, name: 'Practice Test 02', date: d[2].iso, phy: 135, chem: 140, bio: 310, total: 585 },
+          { id: 203, name: 'Practice Test 03', date: d[5].iso, phy: 148, chem: 150, bio: 325, total: 623 }
+        ],
+        syllabus: [
+          { id: 301, subject: 'Biology', name: 'Cell: The Unit of Life', concept: true, ncert: true, pyq: true },
+          { id: 302, subject: 'Biology', name: 'Biomolecules', concept: true, ncert: true, pyq: false },
+          { id: 303, subject: 'Biology', name: 'Cell Cycle & Cell Division', concept: true, ncert: false, pyq: false },
+          { id: 304, subject: 'Physics', name: 'Units & Measurements', concept: true, ncert: true, pyq: true },
+          { id: 305, subject: 'Physics', name: 'Motion in a Straight Line', concept: true, ncert: true, pyq: false },
+          { id: 306, subject: 'Physics', name: 'Motion in a Plane', concept: true, ncert: false, pyq: false },
+          { id: 307, subject: 'Chemistry', name: 'Some Basic Concepts of Chemistry', concept: true, ncert: true, pyq: true },
+          { id: 308, subject: 'Chemistry', name: 'Structure of Atom', concept: true, ncert: true, pyq: false },
+          { id: 309, subject: 'Chemistry', name: 'Thermodynamics', concept: true, ncert: false, pyq: false }
+        ],
+        habits: [
+          {
+            id: 1, name: 'Biology NCERT & Diagrams', subject: 'Biology', icon: 'fa-dna', target: 90, unit: 'mins',
+            history: { [d[0].iso]: 90, [d[1].iso]: 75, [d[2].iso]: 90, [d[3].iso]: 90, [d[4].iso]: 60, [d[5].iso]: 90, [d[6].iso]: 60 }
+          },
+          {
+            id: 2, name: 'Physics Concepts & Numericals', subject: 'Physics', icon: 'fa-atom', target: 90, unit: 'mins',
+            history: { [d[0].iso]: 80, [d[1].iso]: 90, [d[2].iso]: 60, [d[3].iso]: 90, [d[4].iso]: 70, [d[5].iso]: 90, [d[6].iso]: 45 }
+          },
+          {
+            id: 3, name: 'Chemistry Reactions & NCERT', subject: 'Chemistry', icon: 'fa-flask', target: 60, unit: 'mins',
+            history: { [d[0].iso]: 60, [d[1].iso]: 45, [d[2].iso]: 60, [d[3].iso]: 60, [d[4].iso]: 50, [d[5].iso]: 60, [d[6].iso]: 30 }
+          },
+          {
+            id: 4, name: 'Daily Mock MCQs Practice', subject: 'Biology', icon: 'fa-brain', target: 50, unit: 'Qs',
+            history: { [d[0].iso]: 50, [d[1].iso]: 50, [d[2].iso]: 40, [d[3].iso]: 50, [d[4].iso]: 50, [d[5].iso]: 50, [d[6].iso]: 30 }
+          },
+          {
+            id: 5, name: 'Home Strength Workout', subject: 'Fitness', icon: 'fa-dumbbell', target: 30, unit: 'mins',
+            history: { [d[0].iso]: 30, [d[1].iso]: 30, [d[2].iso]: 0, [d[3].iso]: 30, [d[4].iso]: 30, [d[5].iso]: 30, [d[6].iso]: 0 }
+          }
+        ]
+      };
+    }
+
+    let appState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || getDefaultState();
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      renderAll();
+    }
+
+    function useStreakShieldToday() {
+      vibrate(20);
+      if (appState.frozenDates[selectedDateISO]) {
+        alert('Streak Shield is already protecting this date!');
+        return;
+      }
+      if (appState.streakShields <= 0) {
+        alert('No Streak Shields left!');
+        return;
+      }
+      if (confirm(`Activate 1 Streak Shield 🛡️ for ${selectedDateISO}?`)) {
+        appState.streakShields--;
+        appState.frozenDates[selectedDateISO] = true;
+        appState.habits.forEach(h => { h.history[selectedDateISO] = h.target; });
+        saveState();
+        sendTelegramMessage(`🛡️ <b>Streak Freeze Shield Activated!</b>\nYour streak is protected for ${selectedDateISO}. Shields remaining: ${appState.streakShields}`, true);
+      }
+    }
+
+    function openCountdownModal() {
+      document.getElementById('cd-title-input').value = appState.countdown.title;
+      document.getElementById('cd-date-input').value = appState.countdown.targetDate;
+      document.getElementById('countdown-modal').classList.replace('hidden', 'flex');
+    }
+    function closeCountdownModal() {
+      document.getElementById('countdown-modal').classList.replace('flex', 'hidden');
+    }
+    function saveCountdownSettings(e) {
+      e.preventDefault();
+      appState.countdown.title = document.getElementById('cd-title-input').value.trim();
+      appState.countdown.targetDate = document.getElementById('cd-date-input').value;
+      saveState();
+      closeCountdownModal();
+    }
+
+    function openRevisionModal() {
+      document.getElementById('revision-modal').classList.replace('hidden', 'flex');
+      document.getElementById('rev-topic-input').focus();
+    }
+    function closeRevisionModal() {
+      document.getElementById('revision-modal').classList.replace('flex', 'hidden');
+    }
+    function addRevisionTopic(e) {
+      e.preventDefault();
+      const topic = document.getElementById('rev-topic-input').value.trim();
+      const subject = document.getElementById('rev-subject-input').value;
+      if (!topic) return;
+
+      appState.revisions.unshift({
+        id: Date.now(), topic, subject, stageIdx: 0, intervals: [1, 3, 7, 21], nextDueDate: todayISO
+      });
+      document.getElementById('rev-topic-input').value = '';
+      saveState();
+      closeRevisionModal();
+    }
+
+    function completeRevisionStep(revId) {
+      vibrate(25);
+      const item = appState.revisions.find(r => r.id === revId);
+      if (!item) return;
+
+      const completedDayStage = item.intervals[item.stageIdx] || 1;
+      item.stageIdx++;
+      if (item.stageIdx >= item.intervals.length) {
+        alert(`🎉 Mastered "${item.topic}" across all 1-3-7-21 day cycles!`);
+        appState.revisions = appState.revisions.filter(r => r.id !== revId);
+      } else {
+        const nextDays = item.intervals[item.stageIdx];
+        const nextD = new Date();
+        nextD.setDate(nextD.getDate() + nextDays);
+        item.nextDueDate = nextD.toISOString().split('T')[0];
+      }
+      saveState();
+      sendTelegramMessage(`🧠 <b>Spaced Revision Completed!</b>\n📚 <b>${item.subject}:</b> ${item.topic} (Day-${completedDayStage} Recall ✅)`, true);
+    }
+
+    // --- Mock Test Tracker + Auto Telegram Push ---
+    function openAddTestModal() {
+      document.getElementById('add-test-modal').classList.replace('hidden', 'flex');
+      document.getElementById('test-name-input').focus();
+    }
+    function closeAddTestModal() {
+      document.getElementById('add-test-modal').classList.replace('flex', 'hidden');
+    }
+    function saveMockTest(e) {
+      e.preventDefault();
+      const name = document.getElementById('test-name-input').value.trim();
+      const phy = Math.min(180, Math.max(0, parseInt(document.getElementById('test-phy-input').value, 10) || 0));
+      const chem = Math.min(180, Math.max(0, parseInt(document.getElementById('test-chem-input').value, 10) || 0));
+      const bio = Math.min(360, Math.max(0, parseInt(document.getElementById('test-bio-input').value, 10) || 0));
+      const total = phy + chem + bio;
+
+      const prevTest = appState.mockTests.length > 0 ? appState.mockTests[appState.mockTests.length - 1] : null;
+      const diffStr = prevTest ? (total - prevTest.total >= 0 ? `+${total - prevTest.total} 📈` : `${total - prevTest.total} 📉`) : 'First Test 🎯';
+
+      appState.mockTests.push({ id: Date.now(), name, date: todayISO, phy, chem, bio, total });
+      document.getElementById('test-name-input').value = '';
+      saveState();
+      closeAddTestModal();
+
+      if (tgConfig.autoTest) {
+        sendTelegramMessage(
+          `📝 <b>New Practice Test Logged!</b>\n` +
+          `📌 <b>Test:</b> ${name}\n` +
+          `🏆 <b>Total Score:</b> <b>${total} / 720</b> (${diffStr})\n\n` +
+          `• ⚛️ <b>Physics:</b> ${phy} / 180\n` +
+          `• 🧪 <b>Chemistry:</b> ${chem} / 180\n` +
+          `• 🧬 <b>Biology:</b> ${bio} / 360`,
+          true
+        );
+      }
+    }
+
+    function deleteMockTest(id) {
+      if (confirm('Delete this test score entry?')) {
+        appState.mockTests = appState.mockTests.filter(t => t.id !== id);
+        saveState();
+      }
+    }
+
+    function setSyllabusSubject(sub) {
+      vibrate(12);
+      activeSyllabusSubject = sub;
+      ['Biology', 'Physics', 'Chemistry'].forEach(s => {
+        const btn = document.getElementById(`syl-tab-${s}`);
+        if (s === sub) {
+          btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold ${SUBJECTS[s].bg} text-slate-950 tap-scale`;
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800 tap-scale';
+        }
+      });
+      renderSyllabusView();
+    }
+
+    function toggleSyllabusStage(chapId, field) {
+      vibrate(18);
+      const chap = appState.syllabus.find(c => c.id === chapId);
+      if (chap) {
+        chap[field] = !chap[field];
+        saveState();
+      }
+    }
+
+    function promptAddChapter() {
+      const name = prompt(`Enter new ${activeSyllabusSubject} Chapter Name:`);
+      if (name && name.trim()) {
+        appState.syllabus.push({
+          id: Date.now(), subject: activeSyllabusSubject, name: name.trim(), concept: false, ncert: false, pyq: false
+        });
+        saveState();
+      }
+    }
+
+    // ==================== SILENT BACKGROUND-PROOF TIMESTAMP TIMER ====================
+    const RING_CIRCUMFERENCE = 326.7;
+    let timerState = JSON.parse(localStorage.getItem('focussync_v6_timer')) || {
+      type: 'countdown',
+      isRunning: false,
+      subject: 'Physics',
+      habitId: '',
+      customDurationSec: 45 * 60,
+      remainingSec: 45 * 60,
+      stopwatchSec: 0,
+      unloggedSec: 0,
+      sessionTotalLoggedMins: 0,
+      lastTickTimestamp: null
+    };
+
+    let timerLoop = null;
+    let wakeLockSentinel = null;
+
+    function savePersistentTimerState() {
+      timerState.subject = document.getElementById('timer-subject-select').value;
+      timerState.habitId = document.getElementById('timer-habit-select').value;
+      localStorage.setItem('focussync_v6_timer', JSON.stringify(timerState));
+    }
+
+    function syncRealWorldElapsedSeconds() {
+      if (!timerState.isRunning || !timerState.lastTickTimestamp) return;
+      const now = Date.now();
+      const deltaSec = Math.floor((now - timerState.lastTickTimestamp) / 1000);
+      if (deltaSec <= 0) return;
+
+      timerState.lastTickTimestamp += deltaSec * 1000;
+
+      if (timerState.type === 'countdown') {
+        const actualElapsed = Math.min(deltaSec, timerState.remainingSec);
+        timerState.remainingSec -= actualElapsed;
+        timerState.unloggedSec += actualElapsed;
+
+        if (timerState.unloggedSec >= 60) {
+          const minsToCredit = Math.floor(timerState.unloggedSec / 60);
+          timerState.unloggedSec = timerState.unloggedSec % 60;
+          timerState.sessionTotalLoggedMins = (timerState.sessionTotalLoggedMins || 0) + minsToCredit;
+          addSubjectMinutes(timerState.subject, minsToCredit, todayISO, timerState.habitId || null);
+        }
+
+        if (timerState.remainingSec <= 0) {
+          timerState.remainingSec = 0;
+          timerState.isRunning = false;
+          timerState.lastTickTimestamp = null;
+          if (timerState.unloggedSec >= 15) {
+            timerState.sessionTotalLoggedMins = (timerState.sessionTotalLoggedMins || 0) + 1;
+            addSubjectMinutes(timerState.subject, 1, todayISO, timerState.habitId || null);
+            timerState.unloggedSec = 0;
+          }
+          const finishedMins = timerState.sessionTotalLoggedMins || Math.round(timerState.customDurationSec / 60);
+          timerState.sessionTotalLoggedMins = 0;
+          savePersistentTimerState();
+          updateTimerUI();
+          vibrate([120, 80, 150]);
+          if (typeof confetti === 'function') confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+
+          if (tgConfig.autoSession) {
+            pushSessionAlertToTelegram(timerState.subject, finishedMins);
+          }
+        }
+      } else {
+        timerState.stopwatchSec += deltaSec;
+        timerState.unloggedSec += deltaSec;
+        if (timerState.unloggedSec >= 60) {
+          const minsToCredit = Math.floor(timerState.unloggedSec / 60);
+          timerState.unloggedSec = timerState.unloggedSec % 60;
+          timerState.sessionTotalLoggedMins = (timerState.sessionTotalLoggedMins || 0) + minsToCredit;
+          addSubjectMinutes(timerState.subject, minsToCredit, todayISO, timerState.habitId || null);
+        }
+      }
+      savePersistentTimerState();
+      updateTimerUI();
+    }
+
+    function pushSessionAlertToTelegram(subject, minsAdded) {
+      const todaySubLog = appState.subjectMinutesLog[todayISO] || {};
+      const subNow = todaySubLog[subject] || 0;
+      const subTgt = appState.subjectTargets[subject] || 60;
+      const subPct = Math.min(100, Math.round((subNow / subTgt) * 100));
+      const totalToday = Object.values(todaySubLog).reduce((a, b) => a + b, 0);
+
+      sendTelegramMessage(
+        `⚡ <b>Focus Session Logged!</b>\n` +
+        `📚 <b>Subject:</b> ${SUBJECTS[subject].emoji} ${subject} (+${minsAdded}m)\n` +
+        `📈 <b>${subject} Today:</b> <code>${makeTextBar(subPct)}</code> ${subNow}/${subTgt}m (${subPct}%)\n` +
+        `⏳ <b>Total Study Today:</b> ${Math.floor(totalToday / 60)}h ${totalToday % 60}m`,
+        true
+      );
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && timerState.isRunning) syncRealWorldElapsedSeconds();
+    });
+    window.addEventListener('focus', () => {
+      if (timerState.isRunning) syncRealWorldElapsedSeconds();
+    });
+
+    function startTimerLoop() {
+      if (timerLoop) clearInterval(timerLoop);
+      timerLoop = setInterval(() => {
+        if (timerState.isRunning) syncRealWorldElapsedSeconds();
+      }, 1000);
+    }
+
+    function toggleTimer() {
+      vibrate(25);
+      if (timerState.isRunning) {
+        syncRealWorldElapsedSeconds();
+        timerState.isRunning = false;
+        timerState.lastTickTimestamp = null;
+      } else {
+        if (timerState.type === 'countdown' && timerState.remainingSec <= 0) {
+          timerState.remainingSec = timerState.customDurationSec;
+          timerState.sessionTotalLoggedMins = 0;
+        }
+        timerState.isRunning = true;
+        timerState.lastTickTimestamp = Date.now();
+      }
+      savePersistentTimerState();
+      updateTimerUI();
+    }
+
+    function resetTimer() {
+      vibrate(15);
+      timerState.isRunning = false;
+      timerState.lastTickTimestamp = null;
+      timerState.unloggedSec = 0;
+      timerState.sessionTotalLoggedMins = 0;
+      timerState.remainingSec = timerState.customDurationSec;
+      timerState.stopwatchSec = 0;
+      savePersistentTimerState();
+      updateTimerUI();
+    }
+
+    function logElapsedMinutesNow() {
+      vibrate(30);
+      syncRealWorldElapsedSeconds();
+      let minsToLog = Math.floor(timerState.unloggedSec / 60);
+      if (minsToLog === 0 && timerState.unloggedSec >= 10) minsToLog = 1;
+
+      const totalSessionMins = (timerState.sessionTotalLoggedMins || 0) + minsToLog;
+
+      if (minsToLog > 0) {
+        timerState.unloggedSec = 0;
+        addSubjectMinutes(timerState.subject, minsToLog, todayISO, timerState.habitId || null);
+      }
+
+      if (totalSessionMins > 0) {
+        if (tgConfig.autoSession) {
+          pushSessionAlertToTelegram(timerState.subject, totalSessionMins);
+        }
+        timerState.sessionTotalLoggedMins = 0;
+        savePersistentTimerState();
+        updateTimerUI();
+        alert(`Synced +${totalSessionMins}m to ${timerState.subject}!`);
+      } else {
+        alert('Run the timer for at least 10 seconds to log a session!');
+      }
+    }
+
+    function switchTimerType(type) {
+      vibrate(15);
+      if (timerState.isRunning) toggleTimer();
+      timerState.type = type;
+      timerState.unloggedSec = 0;
+      timerState.sessionTotalLoggedMins = 0;
+      savePersistentTimerState();
+      updateTimerUI();
+    }
+
+    function adjustCustomMinutes(deltaMins) {
+      vibrate(12);
+      const currentMins = Math.round(timerState.customDurationSec / 60);
+      setCustomTimerMinutes(Math.min(360, Math.max(1, currentMins + deltaMins)));
+    }
+
+    function setCustomMinutesFromInput() {
+      const val = parseInt(document.getElementById('custom-minutes-input').value, 10) || 25;
+      setCustomTimerMinutes(Math.min(360, Math.max(1, val)));
+    }
+
+    function setCustomTimerMinutes(mins) {
+      vibrate(15);
+      timerState.isRunning = false;
+      timerState.lastTickTimestamp = null;
+      timerState.unloggedSec = 0;
+      timerState.sessionTotalLoggedMins = 0;
+      timerState.customDurationSec = mins * 60;
+      timerState.remainingSec = timerState.customDurationSec;
+      document.getElementById('custom-minutes-input').value = mins;
+      savePersistentTimerState();
+      updateTimerUI();
+    }
+
+    function updateTimerUI() {
+      const cdBtn = document.getElementById('mode-countdown-btn');
+      const swBtn = document.getElementById('mode-stopwatch-btn');
+      const controls = document.getElementById('custom-time-controls');
+
+      if (timerState.type === 'countdown') {
+        cdBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition';
+        swBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-400 transition';
+        controls.classList.remove('hidden');
+      } else {
+        swBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition';
+        cdBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-400 transition';
+        controls.classList.add('hidden');
+      }
+
+      const displaySec = timerState.type === 'countdown' ? timerState.remainingSec : timerState.stopwatchSec;
+      const hrs = Math.floor(displaySec / 3600);
+      const mins = Math.floor((displaySec % 3600) / 60);
+      const secs = displaySec % 60;
+
+      const formatted = hrs > 0
+        ? `${hrs}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+        : `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      document.getElementById('timer-display').innerText = formatted;
+      document.getElementById('mini-timer-clock').innerText = formatted;
+
+      const meta = SUBJECTS[timerState.subject] || SUBJECTS.Physics;
+      document.getElementById('mini-timer-subject').innerText = `${meta.emoji} ${timerState.subject}`;
+      document.getElementById('timer-svg-ring').setAttribute('stroke', meta.hex);
+      document.getElementById('timer-subject-pill').innerText = `${meta.emoji} ${timerState.subject.toUpperCase()}`;
+
+      const ring = document.getElementById('timer-svg-ring');
+      const ratio = timerState.type === 'countdown'
+        ? (timerState.customDurationSec > 0 ? timerState.remainingSec / timerState.customDurationSec : 0)
+        : ((timerState.stopwatchSec % 3600) / 3600);
+      ring.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - ratio);
+
+      document.getElementById('timer-start-btn').innerHTML = timerState.isRunning
+        ? '<i class="fa-solid fa-pause mr-1.5"></i> Pause'
+        : '<i class="fa-solid fa-play mr-1.5"></i> Start Focus';
+
+      document.getElementById('timer-sub-status').innerText = timerState.isRunning
+        ? `⚡ BG-Safe Active (+${timerState.unloggedSec}s towards next min)`
+        : '⚡ Silent Background-Proof Clock Ready';
+
+      updateFloatingMiniTimerVisibility();
+    }
+
+    async function toggleWakeLock() {
+      vibrate(15);
+      const btn = document.getElementById('wakelock-btn');
+      const txt = document.getElementById('wakelock-text');
+      if (!('wakeLock' in navigator)) {
+        alert('Wake Lock not supported on this browser, but BG-Safe Clock is active!');
+        return;
+      }
+      try {
+        if (wakeLockSentinel) {
+          await wakeLockSentinel.release();
+          wakeLockSentinel = null;
+          btn.className = 'px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-bold text-slate-400 flex items-center gap-1.5 tap-scale';
+          txt.innerText = 'Wake Lock';
+        } else {
+          wakeLockSentinel = await navigator.wakeLock.request('screen');
+          btn.className = 'px-3 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-[11px] font-bold text-amber-300 flex items-center gap-1.5 tap-scale';
+          txt.innerText = 'Screen Awake';
+        }
+      } catch (e) {}
+    }
+
+    // --- Core Habit & Subject Progress Functions ---
+    function isGoalDone(habit, dateISO) {
+      return (habit.history[dateISO] || 0) >= (habit.target || 1);
+    }
+
+    function calculateStreak(habit) {
+      let streak = 0;
+      let startIdx = isGoalDone(habit, todayISO) ? 6 : 5;
+      for (let i = startIdx; i >= 0; i--) {
+        if (isGoalDone(habit, last7Days[i].iso) || appState.frozenDates[last7Days[i].iso]) streak++;
+        else break;
+      }
+      return streak;
+    }
+
+    function addSubjectMinutes(subject, minsToAdd, dateISO = todayISO, specificHabitId = null) {
+      if (minsToAdd <= 0) return;
+      if (!appState.subjectMinutesLog[dateISO]) {
+        appState.subjectMinutesLog[dateISO] = { Physics: 0, Chemistry: 0, Biology: 0, Fitness: 0, Tech: 0 };
+      }
+      appState.subjectMinutesLog[dateISO][subject] = (appState.subjectMinutesLog[dateISO][subject] || 0) + minsToAdd;
+
+      appState.habits.forEach(h => {
+        if (specificHabitId && h.id === Number(specificHabitId)) {
+          h.history[dateISO] = (h.history[dateISO] || 0) + minsToAdd;
+        } else if (!specificHabitId && h.subject === subject && h.unit === 'mins') {
+          h.history[dateISO] = (h.history[dateISO] || 0) + minsToAdd;
+        }
+      });
+
+      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      appState.sessions.unshift({ time: nowStr, subject, mins: minsToAdd, date: dateISO });
+      saveState();
+    }
+
+    function stepHabit(habitId, dateISO, forceToggle = false) {
+      vibrate(20);
+      const habit = appState.habits.find(h => h.id === habitId);
+      if (!habit) return;
+
+      const current = habit.history[dateISO] || 0;
+      const target = habit.target || 1;
+      const wasAllDone = appState.habits.length > 0 && appState.habits.every(h => isGoalDone(h, dateISO));
+
+      let delta = 0;
+      if (target === 1 || forceToggle) {
+        const nextVal = current >= target ? 0 : target;
+        delta = nextVal - current;
+        habit.history[dateISO] = nextVal;
+      } else {
+        const step = habit.unit === 'mins' ? 15 : (target >= 20 ? 10 : 1);
+        const nextVal = current + step > target ? (current < target ? target : 0) : current + step;
+        delta = nextVal - current;
+        habit.history[dateISO] = nextVal;
+      }
+
+      if (habit.unit === 'mins' && delta !== 0) {
+        if (!appState.subjectMinutesLog[dateISO]) {
+          appState.subjectMinutesLog[dateISO] = { Physics: 0, Chemistry: 0, Biology: 0, Fitness: 0, Tech: 0 };
+        }
+        appState.subjectMinutesLog[dateISO][habit.subject] = Math.max(0, (appState.subjectMinutesLog[dateISO][habit.subject] || 0) + delta);
+      }
+
+      const nowAllDone = appState.habits.length > 0 && appState.habits.every(h => isGoalDone(h, dateISO));
+      if (!wasAllDone && nowAllDone) {
+        if (typeof confetti === 'function') {
+          vibrate([50, 50, 100]);
+          confetti({ particleCount: 75, spread: 65, origin: { y: 0.7 } });
+        }
+        if (tgConfig.autoSweep) {
+          sendDailyReportToTelegram(true);
+        }
+      }
+      saveState();
+    }
+
+    function startFocusForHabit(habitId) {
+      vibrate(25);
+      const habit = appState.habits.find(h => h.id === habitId);
+      if (!habit) return;
+
+      document.getElementById('timer-subject-select').value = habit.subject;
+      onTimerSubjectChange();
+      document.getElementById('timer-habit-select').value = habit.id;
+
+      if (habit.unit === 'mins' && !timerState.isRunning) {
+        const remaining = Math.max(5, (habit.target || 45) - (habit.history[todayISO] || 0));
+        setCustomTimerMinutes(remaining);
+      }
+      savePersistentTimerState();
+      switchTab('focus');
+    }
+
+    function quickLaunchSubjectTimer(subject) {
+      vibrate(18);
+      document.getElementById('timer-subject-select').value = subject;
+      onTimerSubjectChange();
+      savePersistentTimerState();
+      switchTab('focus');
+    }
+
+    function onTimerSubjectChange() {
+      const subject = document.getElementById('timer-subject-select').value;
+      const habitSelect = document.getElementById('timer-habit-select');
+      const matchingHabits = appState.habits.filter(h => h.subject === subject);
+      habitSelect.innerHTML = `<option value="">All ${subject} Goals (Auto)</option>` +
+        matchingHabits.map(h => `<option value="${h.id}">${h.name} (${h.history[todayISO] || 0}/${h.target}${h.unit})</option>`).join('');
+      savePersistentTimerState();
+      updateTimerUI();
+    }
+
+    function deleteHabit(habitId) {
+      if (confirm('Remove this goal?')) {
+        appState.habits = appState.habits.filter(h => h.id !== habitId);
+        saveState();
+      }
+    }
+
+    // ==================== MASTER RENDER ENGINE ====================
+    function renderAll() {
+      const habits = appState.habits;
+      const totalHabits = habits.length;
+
+      document.getElementById('countdown-title-display').innerText = appState.countdown.title || 'Next Target';
+      const diffMs = new Date(appState.countdown.targetDate) - new Date(todayISO);
+      const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+      document.getElementById('countdown-days-display').innerText = diffDays === 0 ? 'Today!' : `${diffDays} Days Left`;
+
+      document.getElementById('shield-count').innerText = appState.streakShields;
+      const todaySubLog = appState.subjectMinutesLog[todayISO] || {};
+      const todayTotalMins = Object.values(todaySubLog).reduce((a, b) => a + b, 0);
+      document.getElementById('total-hours-badge').innerText = `${Math.floor(todayTotalMins / 60)}h ${todayTotalMins % 60}m Today`;
+
+      let totalChecks = 0;
+      habits.forEach(h => {
+        Object.keys(h.history).forEach(d => { if (h.history[d] >= h.target) totalChecks++; });
+      });
+      const xp = totalChecks * 20 + Math.floor(todayTotalMins / 5);
+      document.getElementById('level-badge').innerText = `LVL ${Math.floor(xp / 100) + 1}`;
+      document.getElementById('xp-bar').style.width = `${xp % 100}%`;
+
+      const bestStreak = habits.reduce((max, h) => Math.max(max, calculateStreak(h)), 0);
+      document.getElementById('top-streak').innerText = `${bestStreak}d`;
+
+      const ribbon = document.getElementById('date-ribbon');
+      ribbon.innerHTML = '';
+      last7Days.forEach(day => {
+        const isSel = day.iso === selectedDateISO;
+        const doneCount = habits.filter(h => isGoalDone(h, day.iso)).length;
+        const allDone = totalHabits > 0 && doneCount === totalHabits;
+        const isFrozen = !!appState.frozenDates[day.iso];
+
+        const btn = document.createElement('button');
+        btn.onclick = () => { vibrate(12); selectedDateISO = day.iso; renderAll(); };
+        btn.className = `tap-scale py-2 rounded-2xl flex flex-col items-center justify-center border transition ${
+          isSel ? 'bg-indigo-600 border-indigo-400 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-900/80 border-slate-800 text-slate-400'
+        }`;
+        btn.innerHTML = `
+          <span class="text-[10px] font-bold uppercase">${day.shortDay}</span>
+          <span class="text-sm font-extrabold mt-0.5 ${isSel ? 'text-white' : 'text-slate-200'}">${day.dateNum}</span>
+          <span class="w-1.5 h-1.5 rounded-full mt-1 ${isFrozen ? 'bg-cyan-400' : allDone ? 'bg-emerald-400' : doneCount > 0 ? 'bg-amber-400' : 'bg-slate-700'}"></span>
+        `;
+        ribbon.appendChild(btn);
+      });
+
+      const doneOnSelected = habits.filter(h => isGoalDone(h, selectedDateISO)).length;
+      const pctSelected = totalHabits === 0 ? 0 : Math.round((doneOnSelected / totalHabits) * 100);
+      const selObj = last7Days.find(d => d.iso === selectedDateISO);
+      document.getElementById('selected-date-label').innerText = selObj && selObj.isToday ? "TODAY'S COMPLETION" : `LOG FOR ${selObj.shortDay.toUpperCase()} ${selObj.dateNum}`;
+      document.getElementById('progress-text').innerText = `${doneOnSelected} / ${totalHabits} Goals`;
+      document.getElementById('progress-percent').innerText = `${pctSelected}%`;
+      document.getElementById('progress-ring').setAttribute('stroke-dasharray', `${pctSelected}, 100`);
+
+      const subContainer = document.getElementById('subject-bars-container');
+      subContainer.innerHTML = '';
+      const daySubMins = appState.subjectMinutesLog[selectedDateISO] || {};
+
+      Object.keys(SUBJECTS).forEach(subKey => {
+        const meta = SUBJECTS[subKey];
+        const logged = daySubMins[subKey] || 0;
+        const target = appState.subjectTargets[subKey] || 60;
+        const pct = Math.min(100, Math.round((logged / target) * 100));
+
+        const row = document.createElement('div');
+        row.className = 'space-y-1';
+        row.innerHTML = `
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-200 flex items-center gap-1.5"><span>${meta.emoji}</span> ${meta.label}</span>
+            <div class="flex items-center gap-2">
+              <span class="font-mono-num text-[11px] font-bold ${logged >= target ? 'text-emerald-400' : 'text-slate-400'}">${logged}/${target}m (${pct}%)</span>
+              <button onclick="quickLaunchSubjectTimer('${subKey}')" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 ${meta.text} border border-slate-700 tap-scale">
+                <i class="fa-solid fa-play text-[9px]"></i> Timer
+              </button>
+            </div>
+          </div>
+          <div class="w-full bg-slate-800/90 h-2 rounded-full overflow-hidden">
+            <div class="${meta.bg} h-full progress-bar-fill rounded-full" style="width: ${pct}%"></div>
+          </div>
+        `;
+        subContainer.appendChild(row);
+      });
+
+      const revList = document.getElementById('revision-queue-list');
+      if (appState.revisions.length === 0) {
+        revList.innerHTML = `<p class="text-xs text-slate-500 text-center py-1">No active recall topics in queue. Tap + Add Topic!</p>`;
+      } else {
+        revList.innerHTML = appState.revisions.map(r => {
+          const meta = SUBJECTS[r.subject] || SUBJECTS.Biology;
+          const isDue = r.nextDueDate <= todayISO;
+          const stageDay = r.intervals[r.stageIdx] || 21;
+          return `
+            <div class="flex items-center justify-between bg-slate-900/80 border ${isDue ? 'border-amber-500/40' : 'border-slate-800'} px-3 py-2 rounded-xl">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded ${meta.soft} ${meta.text}">${r.subject}</span>
+                  <span class="text-[10px] font-bold text-amber-400">Day-${stageDay} Recall</span>
+                </div>
+                <p class="text-xs font-bold text-white truncate mt-0.5">${r.topic}</p>
+              </div>
+              <button onclick="completeRevisionStep(${r.id})" class="px-2.5 py-1.5 rounded-lg ${isDue ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'} text-[11px] font-extrabold tap-scale shrink-0">
+                ${isDue ? '✓ Revised' : `Due ${r.nextDueDate.slice(5)}`}
+              </button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const pillsContainer = document.getElementById('subject-filter-pills');
+      pillsContainer.innerHTML = '';
+      ['All', ...Object.keys(SUBJECTS)].forEach(sub => {
+        const isAct = activeSubjectFilter === sub;
+        const emoji = sub === 'All' ? '🎯' : SUBJECTS[sub].emoji;
+        const btn = document.createElement('button');
+        btn.onclick = () => { vibrate(10); activeSubjectFilter = sub; renderAll(); };
+        btn.className = `px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap tap-scale transition ${
+          isAct ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-slate-900 text-slate-400 border border-slate-800'
+        }`;
+        btn.innerText = `${emoji} ${sub}`;
+        pillsContainer.appendChild(btn);
+      });
+
+      const listEl = document.getElementById('today-habits-list');
+      listEl.innerHTML = '';
+      const filtered = activeSubjectFilter === 'All' ? habits : habits.filter(h => h.subject === activeSubjectFilter);
+
+      filtered.forEach(habit => {
+        const meta = SUBJECTS[habit.subject] || SUBJECTS.Physics;
+        const cur = habit.history[selectedDateISO] || 0;
+        const tgt = habit.target || 1;
+        const done = cur >= tgt;
+        const pct = Math.min(100, Math.round((cur / tgt) * 100));
+        const streak = calculateStreak(habit);
+
+        const card = document.createElement('div');
+        card.className = `glass-card rounded-2xl p-3.5 transition border ${done ? 'border-emerald-500/40 bg-slate-900/90' : 'border-slate-800'}`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-2.5">
+            <div class="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onclick="stepHabit(${habit.id}, '${selectedDateISO}')">
+              <div class="w-11 h-11 rounded-2xl ${meta.soft} ${meta.text} flex items-center justify-center text-base shrink-0">
+                <i class="fa-solid ${habit.icon}"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded ${meta.soft} ${meta.text}">${habit.subject}</span>
+                  <span class="text-[11px] font-bold text-amber-400"><i class="fa-solid fa-fire text-[10px]"></i> ${streak}d</span>
+                </div>
+                <h4 class="text-sm font-bold truncate mt-0.5 ${done ? 'line-through text-slate-400' : 'text-white'}">${habit.name}</h4>
+                <p class="text-[11px] text-slate-400 font-mono-num">${cur} / ${tgt} ${habit.unit}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${habit.unit === 'mins' ? `
+                <button onclick="startFocusForHabit(${habit.id})" class="tap-scale px-2.5 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold flex items-center gap-1">
+                  <i class="fa-solid fa-stopwatch"></i>
+                </button>
+              ` : ''}
+              <button onclick="stepHabit(${habit.id}, '${selectedDateISO}')" class="tap-scale px-2.5 h-9 rounded-xl font-bold text-xs border ${done ? `${meta.bg} text-slate-950 border-transparent` : 'bg-slate-800 text-slate-200 border-slate-700'}">
+                ${done ? '<i class="fa-solid fa-check"></i>' : (habit.unit === 'mins' ? '+15m' : (tgt >= 20 ? '+10' : '+1'))}
+              </button>
+              <button onclick="deleteHabit(${habit.id})" class="text-slate-600 hover:text-rose-400 px-1 py-1 text-xs">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+          <div class="w-full bg-slate-800/90 h-1.5 rounded-full mt-2.5 overflow-hidden">
+            <div class="${meta.bg} h-full progress-bar-fill" style="width: ${pct}%"></div>
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+
+      renderAnalyticsView();
+      renderSessionLogs();
+      renderTestsView();
+      renderSyllabusView();
+    }
+
+    function renderAnalyticsView() {
+      const habits = appState.habits;
+      const totalHabits = habits.length;
+      const stackedBars = document.getElementById('stacked-subject-bars');
+      const stackedLabels = document.getElementById('stacked-subject-labels');
+      stackedBars.innerHTML = '';
+      stackedLabels.innerHTML = '';
+
+      let sevenDayTotalMins = 0;
+      const maxDailyScale = 300;
+
+      last7Days.forEach(day => {
+        const subLog = appState.subjectMinutesLog[day.iso] || {};
+        const dayTotal = Object.values(subLog).reduce((a, b) => a + b, 0);
+        sevenDayTotalMins += dayTotal;
+
+        let segmentsHTML = '';
+        Object.keys(SUBJECTS).forEach(subKey => {
+          const mins = subLog[subKey] || 0;
+          if (mins > 0) {
+            const heightPct = Math.min(100, Math.round((mins / maxDailyScale) * 100));
+            segmentsHTML += `<div class="w-full ${SUBJECTS[subKey].bg}" style="height: ${Math.max(heightPct, 4)}%"></div>`;
+          }
+        });
+
+        const col = document.createElement('div');
+        col.className = 'flex flex-col items-center justify-end h-full';
+        col.innerHTML = `
+          <span class="text-[9px] font-mono-num font-bold text-slate-400 mb-1">${Math.round(dayTotal / 60 * 10) / 10}h</span>
+          <div class="w-full max-w-[26px] bg-slate-800/80 rounded-t-lg h-24 flex flex-col-reverse overflow-hidden p-0.5 gap-[1px]">${segmentsHTML}</div>
+        `;
+        stackedBars.appendChild(col);
+
+        const lbl = document.createElement('div');
+        lbl.className = `text-[11px] font-bold ${day.isToday ? 'text-indigo-400' : 'text-slate-400'}`;
+        lbl.innerText = day.shortDay;
+        stackedLabels.appendChild(lbl);
+      });
+
+      const weeklyBars = document.getElementById('weekly-bars');
+      const weeklyLabels = document.getElementById('weekly-labels');
+      weeklyBars.innerHTML = '';
+      weeklyLabels.innerHTML = '';
+
+      let weekGoalsHit = 0;
+      last7Days.forEach(day => {
+        const done = habits.filter(h => isGoalDone(h, day.iso)).length;
+        weekGoalsHit += done;
+        const pct = totalHabits === 0 ? 0 : Math.round((done / totalHabits) * 100);
+
+        const col = document.createElement('div');
+        col.className = 'flex flex-col items-center justify-end h-full';
+        col.innerHTML = `
+          <span class="text-[10px] font-bold text-slate-400 mb-1">${pct}%</span>
+          <div class="w-full max-w-[26px] bg-slate-800/80 rounded-t-lg h-20 flex items-end p-0.5">
+            <div class="bar-fill w-full rounded-t-md ${day.isToday ? 'bg-indigo-500' : 'bg-emerald-500'}" style="height: ${Math.max(pct, 6)}%"></div>
+          </div>
+        `;
+        weeklyBars.appendChild(col);
+
+        const lbl = document.createElement('div');
+        lbl.className = `text-[11px] font-bold ${day.isToday ? 'text-indigo-400' : 'text-slate-400'}`;
+        lbl.innerText = day.shortDay;
+        weeklyLabels.appendChild(lbl);
+      });
+
+      const weekAvg = totalHabits === 0 ? 0 : Math.round((weekGoalsHit / (totalHabits * 7)) * 100);
+      document.getElementById('weekly-avg-badge').innerText = `${weekAvg}% Avg`;
+      document.getElementById('stat-7d-rate').innerText = `${weekAvg}%`;
+      document.getElementById('stat-7d-hours').innerText = `${(sevenDayTotalMins / 60).toFixed(1)}h`;
+      const bestStreak = habits.reduce((max, h) => Math.max(max, calculateStreak(h)), 0);
+      document.getElementById('stat-best-streak').innerText = `${bestStreak}d`;
+
+      const matrix = document.getElementById('streak-matrix');
+      matrix.innerHTML = '';
+      habits.forEach(habit => {
+        const meta = SUBJECTS[habit.subject] || SUBJECTS.Physics;
+        let circles = '';
+        last7Days.forEach(day => {
+          const done = isGoalDone(habit, day.iso);
+          circles += `
+            <button onclick="stepHabit(${habit.id}, '${day.iso}', true)" class="tap-scale flex flex-col items-center gap-1">
+              <span class="text-[9px] font-bold ${day.isToday ? 'text-indigo-400' : 'text-slate-500'}">${day.shortDay[0]}</span>
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${done ? `${meta.bg} text-slate-950` : 'bg-slate-800 text-slate-500 border border-slate-700'}">
+                ${done ? '<i class="fa-solid fa-check text-[10px]"></i>' : day.dateNum}
+              </div>
+            </button>
+          `;
+        });
+
+        const row = document.createElement('div');
+        row.className = 'space-y-1.5';
+        row.innerHTML = `
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-200"><i class="fa-solid ${habit.icon} ${meta.text} mr-1.5"></i>${habit.name}</span>
+            <span class="text-[11px] text-slate-400">${last7Days.filter(d => isGoalDone(habit, d.iso)).length}/7d</span>
+          </div>
+          <div class="grid grid-cols-7 gap-1 pt-0.5">${circles}</div>
+        `;
+        matrix.appendChild(row);
+      });
+    }
+
+    function renderTestsView() {
+      const tests = appState.mockTests || [];
+      const barsEl = document.getElementById('test-chart-bars');
+      const labelsEl = document.getElementById('test-chart-labels');
+      const listEl = document.getElementById('test-history-list');
+
+      if (tests.length === 0) {
+        document.getElementById('test-latest-score').innerText = '0/720';
+        document.getElementById('test-best-score').innerText = '0';
+        document.getElementById('test-avg-score').innerText = '0';
+        barsEl.innerHTML = '';
+        labelsEl.innerHTML = '';
+        listEl.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">No practice tests logged yet. Tap "+ Log Test" above!</p>`;
+        return;
+      }
+
+      const latest = tests[tests.length - 1];
+      const best = Math.max(...tests.map(t => t.total));
+      const avg = Math.round(tests.reduce((a, b) => a + b.total, 0) / tests.length);
+
+      document.getElementById('test-latest-score').innerText = `${latest.total}/720`;
+      document.getElementById('test-best-score').innerText = `${best}`;
+      document.getElementById('test-avg-score').innerText = `${avg}`;
+
+      const recent6 = tests.slice(-6);
+      barsEl.innerHTML = '';
+      labelsEl.innerHTML = '';
+
+      recent6.forEach(t => {
+        const phyPct = Math.round((t.phy / 720) * 100);
+        const chemPct = Math.round((t.chem / 720) * 100);
+        const bioPct = Math.round((t.bio / 720) * 100);
+
+        const col = document.createElement('div');
+        col.className = 'flex flex-col items-center justify-end h-full';
+        col.innerHTML = `
+          <span class="text-[9px] font-mono-num font-bold text-slate-300 mb-1">${t.total}</span>
+          <div class="w-full max-w-[28px] bg-slate-800/80 rounded-t-lg h-24 flex flex-col-reverse overflow-hidden p-0.5 gap-[1px]">
+            <div class="w-full bg-indigo-500" style="height: ${phyPct}%"></div>
+            <div class="w-full bg-cyan-400" style="height: ${chemPct}%"></div>
+            <div class="w-full bg-emerald-500" style="height: ${bioPct}%"></div>
+          </div>
+        `;
+        barsEl.appendChild(col);
+
+        const lbl = document.createElement('div');
+        lbl.className = 'text-[10px] font-bold text-slate-400 truncate';
+        lbl.innerText = t.name.replace('Practice Test ', 'PT');
+        labelsEl.appendChild(lbl);
+      });
+
+      listEl.innerHTML = [...tests].reverse().map(t => `
+        <div class="glass-card rounded-2xl p-3.5 flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 class="text-sm font-bold text-white">${t.name}</h4>
+              <span class="text-[10px] text-slate-400">${t.date}</span>
+            </div>
+            <div class="flex items-center gap-3 mt-1 text-[11px] font-bold">
+              <span class="text-indigo-400">⚛️ P: ${t.phy}</span>
+              <span class="text-cyan-400">🧪 C: ${t.chem}</span>
+              <span class="text-emerald-400">🧬 B: ${t.bio}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <span class="text-base font-extrabold text-white font-mono-num bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700">${t.total}<span class="text-[10px] text-slate-400">/720</span></span>
+            <button onclick="deleteMockTest(${t.id})" class="text-slate-600 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderSyllabusView() {
+      const allChaps = appState.syllabus || [];
+      const totalStages = allChaps.length * 3;
+      const doneStages = allChaps.reduce((acc, c) => acc + (c.concept ? 1 : 0) + (c.ncert ? 1 : 0) + (c.pyq ? 1 : 0), 0);
+      const masterPct = totalStages === 0 ? 0 : Math.round((doneStages / totalStages) * 100);
+
+      document.getElementById('syllabus-total-pct').innerText = `${masterPct}%`;
+      document.getElementById('syllabus-master-bar').style.width = `${masterPct}%`;
+
+      const filtered = allChaps.filter(c => c.subject === activeSyllabusSubject);
+      const container = document.getElementById('syllabus-chapters-list');
+
+      container.innerHTML = filtered.map(c => {
+        const meta = SUBJECTS[c.subject] || SUBJECTS.Biology;
+        const doneCount = (c.concept ? 1 : 0) + (c.ncert ? 1 : 0) + (c.pyq ? 1 : 0);
+        return `
+          <div class="glass-card rounded-2xl p-3.5 space-y-2.5 border ${doneCount === 3 ? 'border-emerald-500/40' : 'border-slate-800'}">
+            <div class="flex justify-between items-center">
+              <h4 class="text-xs font-bold text-white">${meta.emoji} ${c.name}</h4>
+              <span class="text-[10px] font-mono-num font-bold ${doneCount === 3 ? 'text-emerald-400' : 'text-slate-400'}">${doneCount}/3 Done</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="toggleSyllabusStage(${c.id}, 'concept')" class="py-1.5 rounded-xl text-[11px] font-bold border transition tap-scale ${c.concept ? 'bg-indigo-600 text-white border-indigo-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">
+                ${c.concept ? '✓ ' : ''}Concept
+              </button>
+              <button onclick="toggleSyllabusStage(${c.id}, 'ncert')" class="py-1.5 rounded-xl text-[11px] font-bold border transition tap-scale ${c.ncert ? 'bg-emerald-500 text-slate-950 border-emerald-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">
+                ${c.ncert ? '✓ ' : ''}NCERT
+              </button>
+              <button onclick="toggleSyllabusStage(${c.id}, 'pyq')" class="py-1.5 rounded-xl text-[11px] font-bold border transition tap-scale ${c.pyq ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">
+                ${c.pyq ? '✓ ' : ''}PYQs
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderSessionLogs() {
+      const list = document.getElementById('session-log-list');
+      const todaySessions = (appState.sessions || []).filter(s => s.date === todayISO);
+      document.getElementById('today-sessions-count').innerText = `${todaySessions.length} entries`;
+
+      if (todaySessions.length === 0) {
+        list.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">No focus sessions logged today yet.</p>`;
+        return;
+      }
+
+      list.innerHTML = todaySessions.slice(0, 8).map(s => {
+        const meta = SUBJECTS[s.subject] || SUBJECTS.Physics;
+        return `
+          <div class="flex justify-between items-center bg-slate-900/80 border border-slate-800 px-3 py-2 rounded-xl text-xs">
+            <span class="font-bold text-slate-200">${meta.emoji} ${s.subject}</span>
+            <div class="flex items-center gap-2">
+              <span class="font-mono-num font-bold ${meta.text}">+${s.mins}m</span>
+              <span class="text-[10px] text-slate-500">${s.time}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tab) {
+      vibrate(12);
+      currentTab = tab;
+      ['today', 'analytics', 'focus', 'tests', 'syllabus'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        const nav = document.getElementById(`nav-${t}`);
+        if (nav && t !== 'focus') nav.className = 'flex flex-col items-center gap-1 text-slate-400 tap-scale w-14';
+      });
+      document.getElementById(`view-${tab}`).classList.remove('hidden');
+      const activeNav = document.getElementById(`nav-${tab}`);
+      if (activeNav && tab !== 'focus') activeNav.className = 'flex flex-col items-center gap-1 text-indigo-400 tap-scale w-14';
+      updateFloatingMiniTimerVisibility();
+    }
+
+    function updateFloatingMiniTimerVisibility() {
+      const mini = document.getElementById('floating-mini-timer');
+      if (timerState.isRunning && currentTab !== 'focus') {
+        mini.classList.remove('hidden');
+      } else {
+        mini.classList.add('hidden');
+      }
+    }
+
+    function onUnitTypeChange() {
+      const unit = document.getElementById('habit-unit').value;
+      const targetInput = document.getElementById('habit-target');
+      if (unit === 'mins') targetInput.value = 60;
+      else if (unit === 'Qs') targetInput.value = 50;
+      else targetInput.value = 1;
+    }
+
+    function openAddModal() {
+      document.getElementById('add-modal').classList.replace('hidden', 'flex');
+      document.getElementById('habit-name').focus();
+    }
+    function closeAddModal() {
+      document.getElementById('add-modal').classList.replace('flex', 'hidden');
+      document.getElementById('add-habit-form').reset();
+    }
+
+    function addHabit(e) {
+      e.preventDefault();
+      const name = document.getElementById('habit-name').value.trim();
+      const subject = document.getElementById('habit-subject').value;
+      const unit = document.getElementById('habit-unit').value;
+      const target = parseInt(document.getElementById('habit-target').value, 10) || 1;
+      const icon = document.getElementById('habit-icon').value;
+
+      appState.habits.push({
+        id: Date.now(), name, subject, icon, target, unit, history: { [todayISO]: 0 }
+      });
+      saveState();
+      onTimerSubjectChange();
+      closeAddModal();
+    }
+
+    function openSubjectGoalsModal() {
+      const container = document.getElementById('subject-targets-inputs');
+      container.innerHTML = Object.keys(SUBJECTS).map(sub => {
+        const meta = SUBJECTS[sub];
+        const val = appState.subjectTargets[sub] || 60;
+        return `
+          <div class="flex items-center justify-between bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2">
+            <span class="text-xs font-bold text-white">${meta.emoji} ${meta.label}</span>
+            <div class="flex items-center gap-1.5">
+              <input type="number" id="sub-target-${sub}" value="${val}" min="10" max="600" class="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-right text-xs font-bold text-white">
+              <span class="text-xs text-slate-400">mins</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('subject-goals-modal').classList.replace('hidden', 'flex');
+    }
+
+    function closeSubjectGoalsModal() {
+      document.getElementById('subject-goals-modal').classList.replace('flex', 'hidden');
+    }
+
+    function saveSubjectTargets() {
+      Object.keys(SUBJECTS).forEach(sub => {
+        const el = document.getElementById(`sub-target-${sub}`);
+        if (el) appState.subjectTargets[sub] = parseInt(el.value, 10) || 60;
+      });
+      saveState();
+      closeSubjectGoalsModal();
+    }
+
+    function exportData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `focussync_backup_${todayISO}.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && imported.habits) {
+            appState = imported;
+            saveState();
+            closeTelegramModal();
+            alert('Backup restored!');
+          }
+        } catch (err) {
+          alert('Invalid backup file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // --- Boot Up App ---
+    updateTelegramStatusIndicator();
+    document.getElementById('timer-subject-select').value = timerState.subject || 'Physics';
+    document.getElementById('custom-minutes-input').value = Math.round((timerState.customDurationSec || 2700) / 60);
+    onTimerSubjectChange();
+    if (timerState.habitId) document.getElementById('timer-habit-select').value = timerState.habitId;
+    syncRealWorldElapsedSeconds();
+    startTimerLoop();
+    updateTimerUI();
+    renderAll();
+  </script>
+</body>
+</html>
