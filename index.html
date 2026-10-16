@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#040710">
-  <title>FocusSync • Telegram Cloud Edition</title>
+  <meta name="theme-color" content="#000000">
+  <title>FocusSync • True OLED Cloud Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -12,16 +12,26 @@
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #040710;
+      background-color: #000000;
       color: #f8fafc;
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior-y: contain;
     }
     .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+    
+    /* True Pitch-Black OLED Card Styling */
     .glass-card {
-      background: rgba(15, 23, 42, 0.78);
-      backdrop-filter: blur(16px);
+      background: #070709;
       border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9);
+    }
+    .oled-surface {
+      background-color: #0b0b0f;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .oled-pill {
+      background-color: #0f0f15;
+      border: 1px solid rgba(255, 255, 255, 0.09);
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -32,112 +42,129 @@
     .ring-transition { transition: stroke-dashoffset 0.35s linear; }
   </style>
 </head>
-<body class="min-h-screen flex justify-center selection:bg-indigo-500 selection:text-white">
+<body class="min-h-screen flex justify-center bg-black selection:bg-indigo-500 selection:text-white">
 
-  <!-- Mobile App Shell -->
-  <div class="w-full max-w-md min-h-screen bg-[#060a15] flex flex-col justify-between pb-32 relative shadow-2xl border-x border-slate-800/60 overflow-x-hidden">
+  <!-- True OLED Mobile App Shell -->
+  <div class="w-full max-w-md min-h-screen bg-black flex flex-col justify-between pb-32 relative border-x border-neutral-900 overflow-x-hidden">
 
     <!-- TOP HEADER + EXAM COUNTDOWN + TELEGRAM BOT CONTROLS -->
-    <header class="p-4 pt-4 bg-gradient-to-b from-slate-900/95 to-transparent sticky top-0 z-20 backdrop-blur-md border-b border-slate-800/60 space-y-2.5">
+    <header class="p-4 pt-3.5 bg-black/95 sticky top-0 z-20 backdrop-blur-xl border-b border-neutral-900 space-y-2.5">
       
       <!-- Milestone Countdown Strip -->
-      <div onclick="openCountdownModal()" class="flex items-center justify-between bg-indigo-950/50 border border-indigo-500/30 rounded-xl px-3 py-1.5 cursor-pointer tap-scale">
+      <div onclick="openCountdownModal()" class="flex items-center justify-between bg-[#080811] border border-indigo-500/30 rounded-xl px-3 py-1.5 cursor-pointer tap-scale">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-hourglass-half text-indigo-400 text-xs animate-spin" style="animation-duration: 6s;"></i>
           <span id="countdown-title-display" class="text-[11px] font-bold text-indigo-200">Next Practice Test</span>
         </div>
         <div class="flex items-center gap-2">
           <span id="countdown-days-display" class="text-xs font-extrabold text-amber-400 font-mono-num">14 Days Left</span>
-          <i class="fa-solid fa-pen text-[9px] text-slate-400"></i>
+          <i class="fa-solid fa-pen text-[9px] text-neutral-500"></i>
         </div>
       </div>
 
       <div class="flex justify-between items-center">
         <div>
           <div class="flex items-center gap-1.5">
-            <span id="level-badge" class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">LVL 1</span>
-            <span id="total-hours-badge" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">0h 0m Today</span>
+            <span id="level-badge" class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">LVL 1</span>
+            <span id="total-hours-badge" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/25">0h 0m Today</span>
           </div>
-          <h1 class="text-xl font-extrabold tracking-tight text-white mt-0.5">Focus<span class="text-indigo-400">Sync</span></h1>
+          <h1 class="text-xl font-extrabold tracking-tight text-white mt-0.5">Focus<span class="text-indigo-500">Sync</span> <span class="text-[9px] font-mono-num uppercase px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400 border border-neutral-800 align-middle">OLED</span></h1>
         </div>
 
         <!-- Right Controls: Streak + Shield + Telegram Bot -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5">
           <!-- Streak Pill -->
           <div class="flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1.5 rounded-full">
             <i class="fa-solid fa-fire text-amber-400 text-xs animate-pulse"></i>
-            <span id="top-streak" class="font-bold text-amber-400 text-xs">0d</span>
+            <span id="top-streak" class="font-bold text-amber-400 text-xs font-mono-num">0d</span>
           </div>
 
           <!-- Streak Shield Pill -->
           <button onclick="useStreakShieldToday()" class="flex items-center gap-1 bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-1.5 rounded-full tap-scale" title="Streak Freeze Shields">
             <i class="fa-solid fa-shield-heart text-cyan-400 text-xs"></i>
-            <span id="shield-count" class="font-bold text-cyan-300 text-xs">2</span>
+            <span id="shield-count" class="font-bold text-cyan-300 text-xs font-mono-num">2</span>
           </button>
 
           <!-- TELEGRAM BOT CONTROL BUTTON -->
-          <button onclick="openTelegramModal()" id="tg-header-btn" class="relative flex items-center gap-1.5 bg-sky-500/15 border border-sky-500/40 px-3 py-1.5 rounded-full text-sky-400 tap-scale" title="Telegram Bot Sync & Backup">
+          <button onclick="openTelegramModal()" id="tg-header-btn" class="relative flex items-center gap-1.5 bg-sky-500/10 border border-sky-500/40 px-3 py-1.5 rounded-full text-sky-400 tap-scale" title="Telegram Bot Sync & Backup">
             <i class="fa-brands fa-telegram text-sm"></i>
-            <span class="text-[11px] font-bold text-sky-300">Bot Sync</span>
-            <span id="tg-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-500 absolute -top-0.5 -right-0.5 border border-slate-900"></span>
+            <span class="text-[11px] font-bold text-sky-300">Bot</span>
+            <span id="tg-status-dot" class="w-2.5 h-2.5 rounded-full bg-neutral-600 absolute -top-0.5 -right-0.5 border border-black"></span>
           </button>
         </div>
       </div>
 
       <!-- Thin XP Progress Bar -->
-      <div class="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
-        <div id="xp-bar" class="bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400 h-full progress-bar-fill" style="width: 0%"></div>
+      <div class="w-full bg-neutral-900 h-1.5 rounded-full overflow-hidden">
+        <div id="xp-bar" class="bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 h-full progress-bar-fill" style="width: 0%"></div>
       </div>
     </header>
 
     <!-- ==================== TAB 1: TODAY VIEW ==================== -->
-    <main id="view-today" class="px-4 pt-3 space-y-5 flex-1">
+    <main id="view-today" class="px-4 pt-3 space-y-4 flex-1">
 
       <!-- 7-Day Interactive Date Strip -->
       <div id="date-ribbon" class="grid grid-cols-7 gap-1.5"></div>
 
       <!-- Overall Daily Target Hero Card + 1-Tap Push to Telegram -->
-      <section class="glass-card rounded-2xl p-4 space-y-3 shadow-lg">
+      <section class="glass-card rounded-2xl p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div>
             <span id="selected-date-label" class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-400">TODAY'S COMPLETION</span>
             <p id="progress-text" class="text-2xl font-extrabold text-white mt-0.5">0 / 0 Goals</p>
-            <p id="motivational-sub" class="text-xs text-slate-400 mt-1">Synced with Background Timer & Telegram Bot.</p>
+            <p id="motivational-sub" class="text-xs text-neutral-400 mt-1">True OLED Mode • Auto-Timer Synced.</p>
           </div>
           <div class="relative w-16 h-16 flex items-center justify-center shrink-0">
             <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
-              <path class="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8" />
+              <path class="text-neutral-900" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8" />
               <path id="progress-ring" class="text-indigo-500 transition-all duration-500" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" />
             </svg>
-            <span id="progress-percent" class="absolute text-xs font-extrabold text-white">0%</span>
+            <span id="progress-percent" class="absolute text-xs font-extrabold text-white font-mono-num">0%</span>
           </div>
         </div>
 
         <!-- Quick Telegram Push Strip -->
-        <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
-          <button onclick="sendDailyReportToTelegram()" class="flex-1 bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 tap-scale">
-            <i class="fa-brands fa-telegram text-sm"></i> Send Today's Report to Bot
+        <div class="flex items-center gap-2 pt-2 border-t border-neutral-900">
+          <button onclick="sendDailyReportToTelegram()" class="flex-1 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-300 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 tap-scale">
+            <i class="fa-brands fa-telegram text-sm"></i> Push Report to Bot
           </button>
-          <button onclick="sendBackupFileToTelegram()" class="px-3 py-2 rounded-xl bg-slate-800/90 border border-slate-700 text-slate-300 text-xs font-bold flex items-center gap-1 tap-scale" title="Send JSON Backup File to Telegram">
-            <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i> Backup
+          <button onclick="sendBackupFileToTelegram()" class="px-3 py-2 rounded-xl oled-surface text-neutral-300 text-xs font-bold flex items-center gap-1 tap-scale" title="Send JSON Backup File to Telegram">
+            <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i> Cloud Save
           </button>
         </div>
       </section>
 
+      <!-- QUICK DAILY QUESTION / MCQ BURST COUNTER -->
+      <section class="glass-card rounded-2xl p-3.5 flex items-center justify-between border border-emerald-500/20">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400">Daily MCQ / PYQ Counter</span>
+            <p class="text-base font-extrabold text-white font-mono-num"><span id="daily-mcq-count">0</span> Questions Solved</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button onclick="logQuickMCQs(10)" class="px-2.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-extrabold font-mono-num tap-scale">+10</button>
+          <button onclick="logQuickMCQs(25)" class="px-2.5 py-1.5 rounded-xl bg-emerald-500 text-black text-xs font-extrabold font-mono-num tap-scale">+25</button>
+        </div>
+      </section>
+
       <!-- SUBJECT-WISE MASTER PROGRESS BARS -->
-      <section class="glass-card rounded-2xl p-4 shadow-lg space-y-3">
+      <section class="glass-card rounded-2xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <div>
             <h3 class="text-xs font-extrabold uppercase tracking-wider text-white flex items-center gap-1.5">
               <i class="fa-solid fa-layer-group text-indigo-400"></i> Subject Study Progress
             </h3>
-            <p class="text-[11px] text-slate-400">Auto-synced with Background Timer</p>
+            <p class="text-[11px] text-neutral-400">Auto-synced with Background Timer</p>
           </div>
           <div class="flex items-center gap-1.5">
-            <button onclick="openAddModal()" class="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg tap-scale">
+            <button onclick="openAddModal()" class="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-lg tap-scale">
               + Goal
             </button>
-            <button onclick="openSubjectGoalsModal()" class="text-[11px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-lg tap-scale">
+            <button onclick="openSubjectGoalsModal()" class="text-[11px] font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/25 px-2.5 py-1 rounded-lg tap-scale">
               Targets
             </button>
           </div>
@@ -146,16 +173,16 @@
       </section>
 
       <!-- SPACED REPETITION (1-3-7-21 DAY) REVISION QUEUE -->
-      <section class="glass-card rounded-2xl p-4 shadow-lg space-y-3 border border-amber-500/20">
+      <section class="glass-card rounded-2xl p-4 space-y-3 border border-amber-500/20">
         <div class="flex justify-between items-center">
           <div>
             <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-              <i class="fa-solid fa-rotate"></i> Spaced Revision Queue (1-3-7-21d)
+              <i class="fa-solid fa-rotate"></i> Active Recall Queue (1-3-7-21d)
             </h3>
-            <p class="text-[11px] text-slate-400">Topics scheduled for active recall today</p>
+            <p class="text-[11px] text-neutral-400">Spaced repetition topics scheduled today</p>
           </div>
           <button onclick="openRevisionModal()" class="text-[11px] font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-lg tap-scale">
-            + Add Topic
+            + Topic
           </button>
         </div>
         <div id="revision-queue-list" class="space-y-2"></div>
@@ -169,28 +196,49 @@
 
     </main>
 
-    <!-- ==================== TAB 2: STREAKS & ANALYTICS VIEW ==================== -->
+    <!-- ==================== TAB 2: STREAKS, HEATMAP & ANALYTICS VIEW ==================== -->
     <main id="view-analytics" class="px-4 pt-4 space-y-5 flex-1 hidden">
 
       <div class="grid grid-cols-3 gap-2.5">
         <div class="glass-card p-3 rounded-2xl text-center">
-          <p class="text-[10px] font-bold uppercase text-slate-400">7d Goal Rate</p>
-          <p id="stat-7d-rate" class="text-lg font-extrabold text-emerald-400 mt-0.5">0%</p>
+          <p class="text-[10px] font-bold uppercase text-neutral-400">7d Goal Rate</p>
+          <p id="stat-7d-rate" class="text-lg font-extrabold text-emerald-400 font-mono-num mt-0.5">0%</p>
         </div>
         <div class="glass-card p-3 rounded-2xl text-center">
-          <p class="text-[10px] font-bold uppercase text-slate-400">7d Study Time</p>
-          <p id="stat-7d-hours" class="text-lg font-extrabold text-indigo-400 mt-0.5">0h</p>
+          <p class="text-[10px] font-bold uppercase text-neutral-400">7d Study Time</p>
+          <p id="stat-7d-hours" class="text-lg font-extrabold text-indigo-400 font-mono-num mt-0.5">0h</p>
         </div>
         <div class="glass-card p-3 rounded-2xl text-center">
-          <p class="text-[10px] font-bold uppercase text-slate-400">Best Streak</p>
-          <p id="stat-best-streak" class="text-lg font-extrabold text-amber-400 mt-0.5">0d</p>
+          <p class="text-[10px] font-bold uppercase text-neutral-400">Best Streak</p>
+          <p id="stat-best-streak" class="text-lg font-extrabold text-amber-400 font-mono-num mt-0.5">0d</p>
         </div>
       </div>
 
+      <!-- 28-DAY OLED STUDY INTENSITY HEATMAP -->
+      <section class="glass-card rounded-2xl p-4 space-y-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+              <i class="fa-solid fa-fire-flame-curved text-emerald-400"></i> 28-Day Study Heatmap
+            </h3>
+            <p class="text-[11px] text-neutral-400">Daily study intensity over the past 4 weeks</p>
+          </div>
+          <div class="flex items-center gap-1 text-[10px] text-neutral-400">
+            <span>Less</span>
+            <span class="w-2.5 h-2.5 rounded-sm bg-neutral-900 border border-neutral-800"></span>
+            <span class="w-2.5 h-2.5 rounded-sm bg-emerald-950"></span>
+            <span class="w-2.5 h-2.5 rounded-sm bg-emerald-700"></span>
+            <span class="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span>
+            <span>More</span>
+          </div>
+        </div>
+        <div id="heatmap-grid" class="grid grid-cols-7 gap-1.5 pt-1"></div>
+      </section>
+
       <!-- Stacked Subject Time Bar Chart (7 Days) -->
-      <section class="glass-card rounded-2xl p-4 shadow-lg">
+      <section class="glass-card rounded-2xl p-4">
         <h3 class="text-sm font-bold text-white">7-Day Subject Time Breakdown</h3>
-        <p class="text-[11px] text-slate-400 mb-2">Stacked hours logged per subject</p>
+        <p class="text-[11px] text-neutral-400 mb-2">Stacked hours logged per subject</p>
         <div class="flex flex-wrap gap-2.5 mb-3 text-[10px] font-bold">
           <span class="flex items-center gap-1 text-indigo-400"><span class="w-2 h-2 rounded-full bg-indigo-500"></span>Physics</span>
           <span class="flex items-center gap-1 text-cyan-400"><span class="w-2 h-2 rounded-full bg-cyan-400"></span>Chemistry</span>
@@ -198,45 +246,45 @@
           <span class="flex items-center gap-1 text-amber-400"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Fitness</span>
           <span class="flex items-center gap-1 text-rose-400"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Tech</span>
         </div>
-        <div id="stacked-subject-bars" class="grid grid-cols-7 gap-2 items-end h-32 pt-4 px-1 border-b border-slate-800 pb-2"></div>
+        <div id="stacked-subject-bars" class="grid grid-cols-7 gap-2 items-end h-32 pt-4 px-1 border-b border-neutral-900 pb-2"></div>
         <div id="stacked-subject-labels" class="grid grid-cols-7 gap-2 text-center mt-2"></div>
       </section>
 
       <!-- Weekly Completion Bar Chart -->
-      <section class="glass-card rounded-2xl p-4 shadow-lg">
+      <section class="glass-card rounded-2xl p-4">
         <div class="flex justify-between items-center mb-3">
           <div>
             <h3 class="text-sm font-bold text-white">Weekly Goal Completion %</h3>
-            <p class="text-[11px] text-slate-400">Daily habits hit over last 7 days</p>
+            <p class="text-[11px] text-neutral-400">Daily habits hit over last 7 days</p>
           </div>
-          <span id="weekly-avg-badge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">0% Avg</span>
+          <span id="weekly-avg-badge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono-num">0% Avg</span>
         </div>
-        <div id="weekly-bars" class="grid grid-cols-7 gap-2 items-end h-28 pt-4 px-1 border-b border-slate-800 pb-2"></div>
+        <div id="weekly-bars" class="grid grid-cols-7 gap-2 items-end h-28 pt-4 px-1 border-b border-neutral-900 pb-2"></div>
         <div id="weekly-labels" class="grid grid-cols-7 gap-2 text-center mt-2"></div>
       </section>
 
       <!-- Interactive 7-Day Streak Matrix -->
-      <section class="glass-card rounded-2xl p-4 shadow-lg">
+      <section class="glass-card rounded-2xl p-4">
         <h3 class="text-sm font-bold text-white mb-0.5">7-Day Habit Streak Grid</h3>
-        <p class="text-[11px] text-slate-400 mb-4">Tap any circle to toggle completion for past days</p>
+        <p class="text-[11px] text-neutral-400 mb-4">Tap any circle to toggle completion for past days</p>
         <div id="streak-matrix" class="space-y-4"></div>
       </section>
 
     </main>
 
-    <!-- ==================== TAB 3: SILENT BACKGROUND-PROOF TIMER ==================== -->
+    <!-- ==================== TAB 3: SILENT BACKGROUND-PROOF TIMER + AMBIENT AUDIO ==================== -->
     <main id="view-focus" class="px-4 pt-3 space-y-4 flex-1 hidden">
 
-      <div class="glass-card rounded-3xl p-5 w-full text-center space-y-4 shadow-xl border border-slate-800/90">
+      <div class="glass-card rounded-3xl p-5 w-full text-center space-y-4">
 
         <!-- Top Controls: Mode Switcher + Screen WakeLock -->
         <div class="flex items-center justify-between gap-2">
-          <div class="inline-flex bg-slate-900 p-1 rounded-xl border border-slate-800 flex-1">
+          <div class="inline-flex bg-black p-1 rounded-xl border border-neutral-800 flex-1">
             <button id="mode-countdown-btn" onclick="switchTimerType('countdown')" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition">Countdown</button>
-            <button id="mode-stopwatch-btn" onclick="switchTimerType('stopwatch')" class="flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-400 transition">Stopwatch</button>
+            <button id="mode-stopwatch-btn" onclick="switchTimerType('stopwatch')" class="flex-1 py-1.5 rounded-lg text-xs font-semibold text-neutral-400 transition">Stopwatch</button>
           </div>
 
-          <button id="wakelock-btn" onclick="toggleWakeLock()" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-bold text-slate-400 flex items-center gap-1.5 tap-scale" title="Keep screen awake while studying">
+          <button id="wakelock-btn" onclick="toggleWakeLock()" class="px-3 py-2 rounded-xl bg-black border border-neutral-800 text-[11px] font-bold text-neutral-400 flex items-center gap-1.5 tap-scale" title="Keep screen awake while studying">
             <i class="fa-solid fa-sun"></i> <span id="wakelock-text">Wake Lock</span>
           </button>
         </div>
@@ -244,8 +292,8 @@
         <!-- Subject & Goal Selector -->
         <div class="grid grid-cols-2 gap-2.5 text-left">
           <div>
-            <label class="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Subject</label>
-            <select id="timer-subject-select" onchange="onTimerSubjectChange()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-indigo-500">
+            <label class="block text-[10px] font-extrabold uppercase text-neutral-400 mb-1">Subject</label>
+            <select id="timer-subject-select" onchange="onTimerSubjectChange()" class="w-full oled-surface rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-indigo-500">
               <option value="Physics">⚛️ Physics</option>
               <option value="Chemistry">🧪 Chemistry</option>
               <option value="Biology">🧬 Biology</option>
@@ -254,8 +302,8 @@
             </select>
           </div>
           <div>
-            <label class="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Auto-Sync Goal</label>
-            <select id="timer-habit-select" onchange="savePersistentTimerState()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-indigo-500">
+            <label class="block text-[10px] font-extrabold uppercase text-neutral-400 mb-1">Auto-Sync Goal</label>
+            <select id="timer-habit-select" onchange="savePersistentTimerState()" class="w-full oled-surface rounded-xl px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-indigo-500">
             </select>
           </div>
         </div>
@@ -263,35 +311,51 @@
         <!-- Circular SVG Timer Ring -->
         <div class="relative w-52 h-52 mx-auto flex items-center justify-center my-1">
           <svg class="w-full h-full -rotate-90" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="52" stroke="rgba(30,41,59,0.9)" stroke-width="7" fill="none" />
+            <circle cx="60" cy="60" r="52" stroke="#121218" stroke-width="7" fill="none" />
             <circle id="timer-svg-ring" cx="60" cy="60" r="52" stroke="#6366f1" stroke-width="7" fill="none"
               stroke-dasharray="326.7" stroke-dashoffset="0" stroke-linecap="round" class="ring-transition" />
           </svg>
           <div class="absolute inset-0 flex flex-col items-center justify-center">
             <span id="timer-subject-pill" class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">PHYSICS</span>
             <div id="timer-display" class="text-4xl font-extrabold text-white font-mono-num my-1.5 tracking-tight">45:00</div>
-            <span id="timer-sub-status" class="text-[10px] text-emerald-400 font-semibold px-3">⚡ Silent BG-Safe Clock Active</span>
+            <span id="timer-sub-status" class="text-[10px] text-emerald-400 font-semibold px-3">⚡ OLED BG-Safe Clock Ready</span>
+          </div>
+        </div>
+
+        <!-- Built-In Web Audio Focus Sound Synthesizer -->
+        <div class="oled-surface rounded-2xl p-2.5 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-left">
+            <i class="fa-solid fa-headphones text-indigo-400 text-sm pl-1"></i>
+            <div>
+              <p class="text-[11px] font-bold text-white">Focus Soundscape</p>
+              <p id="sound-status-label" class="text-[10px] text-neutral-400">Off • Offline Synth</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="setFocusSound('off')" id="snd-off" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-indigo-600 text-white tap-scale">Off</button>
+            <button onclick="setFocusSound('brown')" id="snd-brown" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-neutral-900 text-neutral-400 border border-neutral-800 tap-scale">🌊 Deep Brown</button>
+            <button onclick="setFocusSound('binaural')" id="snd-binaural" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-neutral-900 text-neutral-400 border border-neutral-800 tap-scale">🧠 40Hz Gamma</button>
           </div>
         </div>
 
         <!-- Custom Time Adjuster Controls -->
         <div id="custom-time-controls" class="space-y-2.5">
           <div class="flex items-center justify-center gap-2">
-            <button onclick="adjustCustomMinutes(-10)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 tap-scale">-10m</button>
-            <button onclick="adjustCustomMinutes(-5)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 tap-scale">-5m</button>
-            <div class="flex items-center bg-slate-900 border border-indigo-500/40 rounded-xl px-2.5 py-1">
-              <input type="number" id="custom-minutes-input" min="1" max="360" value="45" onchange="setCustomMinutesFromInput()" class="w-12 bg-transparent text-center font-extrabold text-sm text-white focus:outline-none">
-              <span class="text-[11px] font-bold text-slate-400">min</span>
+            <button onclick="adjustCustomMinutes(-10)" class="px-2.5 py-1.5 rounded-xl oled-pill text-xs font-bold text-neutral-300 tap-scale">-10m</button>
+            <button onclick="adjustCustomMinutes(-5)" class="px-2.5 py-1.5 rounded-xl oled-pill text-xs font-bold text-neutral-300 tap-scale">-5m</button>
+            <div class="flex items-center bg-black border border-indigo-500/40 rounded-xl px-2.5 py-1">
+              <input type="number" id="custom-minutes-input" min="1" max="360" value="45" onchange="setCustomMinutesFromInput()" class="w-12 bg-transparent text-center font-extrabold text-sm text-white font-mono-num focus:outline-none">
+              <span class="text-[11px] font-bold text-neutral-400">min</span>
             </div>
-            <button onclick="adjustCustomMinutes(5)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 tap-scale">+5m</button>
-            <button onclick="adjustCustomMinutes(10)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 tap-scale">+10m</button>
+            <button onclick="adjustCustomMinutes(5)" class="px-2.5 py-1.5 rounded-xl oled-pill text-xs font-bold text-neutral-300 tap-scale">+5m</button>
+            <button onclick="adjustCustomMinutes(10)" class="px-2.5 py-1.5 rounded-xl oled-pill text-xs font-bold text-neutral-300 tap-scale">+10m</button>
           </div>
 
           <div class="flex justify-center gap-1.5 flex-wrap">
-            <button onclick="setCustomTimerMinutes(25)" class="px-2.5 py-1 rounded-lg bg-slate-800/70 text-[11px] font-semibold text-slate-300 border border-slate-700/70 tap-scale">25m Pomodoro</button>
-            <button onclick="setCustomTimerMinutes(45)" class="px-2.5 py-1 rounded-lg bg-slate-800/70 text-[11px] font-semibold text-slate-300 border border-slate-700/70 tap-scale">45m Lecture</button>
-            <button onclick="setCustomTimerMinutes(90)" class="px-2.5 py-1 rounded-lg bg-slate-800/70 text-[11px] font-semibold text-slate-300 border border-slate-700/70 tap-scale">90m Deep</button>
-            <button onclick="setCustomTimerMinutes(180)" class="px-2.5 py-1 rounded-lg bg-slate-800/70 text-[11px] font-semibold text-slate-300 border border-slate-700/70 tap-scale">180m Exam</button>
+            <button onclick="setCustomTimerMinutes(25)" class="px-2.5 py-1 rounded-lg oled-pill text-[11px] font-semibold text-neutral-300 tap-scale">25m Pomo</button>
+            <button onclick="setCustomTimerMinutes(45)" class="px-2.5 py-1 rounded-lg oled-pill text-[11px] font-semibold text-neutral-300 tap-scale">45m Lecture</button>
+            <button onclick="setCustomTimerMinutes(90)" class="px-2.5 py-1 rounded-lg oled-pill text-[11px] font-semibold text-neutral-300 tap-scale">90m Deep</button>
+            <button onclick="setCustomTimerMinutes(180)" class="px-2.5 py-1 rounded-lg oled-pill text-[11px] font-semibold text-neutral-300 tap-scale">180m Exam</button>
           </div>
         </div>
 
@@ -303,7 +367,7 @@
           <button id="log-partial-btn" onclick="logElapsedMinutesNow()" class="px-3.5 py-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs tap-scale">
             <i class="fa-solid fa-check-double mr-1"></i> Log Now
           </button>
-          <button onclick="resetTimer()" class="w-11 h-11 rounded-2xl bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center tap-scale">
+          <button onclick="resetTimer()" class="w-11 h-11 rounded-2xl oled-pill text-neutral-300 flex items-center justify-center tap-scale">
             <i class="fa-solid fa-rotate-right"></i>
           </button>
         </div>
@@ -313,71 +377,93 @@
       <!-- Recent Subject Timer Sessions Log -->
       <section class="glass-card rounded-2xl p-4 space-y-2.5">
         <div class="flex justify-between items-center">
-          <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-300">Today's Synced Sessions</h3>
-          <span id="today-sessions-count" class="text-[11px] font-bold text-indigo-400">0 entries</span>
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-neutral-300">Today's Synced Sessions</h3>
+          <span id="today-sessions-count" class="text-[11px] font-bold text-indigo-400 font-mono-num">0 entries</span>
         </div>
         <div id="session-log-list" class="space-y-2 max-h-36 overflow-y-auto no-scrollbar"></div>
       </section>
 
     </main>
 
-    <!-- ==================== TAB 4: MOCK TEST & SCORE TRACKER ==================== -->
+    <!-- ==================== TAB 4: MOCK TEST & MISTAKE NOTEBOOK ==================== -->
     <main id="view-tests" class="px-4 pt-4 space-y-5 flex-1 hidden">
 
       <div class="grid grid-cols-3 gap-2.5">
         <div class="glass-card p-3 rounded-2xl text-center">
-          <p class="text-[10px] font-bold uppercase text-slate-400">Latest Score</p>
+          <p class="text-[10px] font-bold uppercase text-neutral-400">Latest Score</p>
           <p id="test-latest-score" class="text-lg font-extrabold text-indigo-400 font-mono-num mt-0.5">0/720</p>
         </div>
         <div class="glass-card p-3 rounded-2xl text-center">
-          <p class="text-[10px] font-bold uppercase text-slate-400">Personal Best</p>
+          <p class="text-[10px] font-bold uppercase text-neutral-400">Personal Best</p>
           <p id="test-best-score" class="text-lg font-extrabold text-emerald-400 font-mono-num mt-0.5">0</p>
         </div>
         <div class="glass-card p-3 rounded-2xl text-center">
-          <p class="text-[10px] font-bold uppercase text-slate-400">Avg Score</p>
+          <p class="text-[10px] font-bold uppercase text-neutral-400">Avg Score</p>
           <p id="test-avg-score" class="text-lg font-extrabold text-amber-400 font-mono-num mt-0.5">0</p>
         </div>
       </div>
 
-      <section class="glass-card rounded-2xl p-4 shadow-lg">
+      <section class="glass-card rounded-2xl p-4">
         <div class="flex justify-between items-center mb-3">
           <div>
             <h3 class="text-sm font-bold text-white">Practice Test Score Trend</h3>
-            <p class="text-[11px] text-slate-400">Auto-sends score card to Telegram Bot</p>
+            <p class="text-[11px] text-neutral-400">Auto-sends score card to Telegram Bot</p>
           </div>
           <button onclick="openAddTestModal()" class="text-xs font-bold bg-indigo-600 text-white px-3 py-1.5 rounded-xl tap-scale shadow-md shadow-indigo-600/30">
             + Log Test
           </button>
         </div>
-        <div id="test-chart-bars" class="grid grid-cols-6 gap-2 items-end h-32 pt-4 px-1 border-b border-slate-800 pb-2"></div>
+        <div id="test-chart-bars" class="grid grid-cols-6 gap-2 items-end h-32 pt-4 px-1 border-b border-neutral-900 pb-2"></div>
         <div id="test-chart-labels" class="grid grid-cols-6 gap-2 text-center mt-2"></div>
+      </section>
+
+      <!-- MISTAKE & WEAK CONCEPT NOTEBOOK -->
+      <section class="glass-card rounded-2xl p-4 space-y-3 border border-rose-500/25">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation"></i> Test Mistake & Formula Log
+            </h3>
+            <p class="text-[11px] text-neutral-400">Track weak concepts & silly errors from tests</p>
+          </div>
+          <button onclick="openMistakeModal()" class="text-[11px] font-bold text-rose-300 bg-rose-500/15 border border-rose-500/30 px-2.5 py-1 rounded-lg tap-scale">
+            + Log Error
+          </button>
+        </div>
+        <div id="mistake-log-list" class="space-y-2"></div>
       </section>
 
       <section class="space-y-2.5" id="test-history-list"></section>
 
     </main>
 
-    <!-- ==================== TAB 5: CHAPTER SYLLABUS & PYQ TRACKER ==================== -->
+    <!-- ==================== TAB 5: CHAPTER SYLLABUS & NCERT PRE-LOADER ==================== -->
     <main id="view-syllabus" class="px-4 pt-4 space-y-4 flex-1 hidden">
 
-      <section class="glass-card rounded-2xl p-4 shadow-lg space-y-2">
+      <section class="glass-card rounded-2xl p-4 space-y-2.5">
         <div class="flex justify-between items-center">
           <div>
             <h3 class="text-sm font-extrabold text-white">Master Syllabus & PYQ Tracker</h3>
-            <p class="text-[11px] text-slate-400">Tap Concept, NCERT, or PYQs as you master chapters</p>
+            <p class="text-[11px] text-neutral-400">Tap Concept, NCERT, or PYQs as you master chapters</p>
           </div>
           <span id="syllabus-total-pct" class="text-sm font-extrabold text-emerald-400 font-mono-num">0%</span>
         </div>
-        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+        <div class="w-full bg-neutral-900 h-2 rounded-full overflow-hidden">
           <div id="syllabus-master-bar" class="bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 h-full progress-bar-fill" style="width: 0%"></div>
+        </div>
+        <div class="flex items-center justify-between pt-1">
+          <span id="syllabus-count-summary" class="text-[11px] font-semibold text-neutral-400">0 Chapters Tracked</span>
+          <button onclick="preloadClass11NCERT()" class="text-[11px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-1 rounded-lg tap-scale">
+            <i class="fa-solid fa-book-medical mr-1"></i> Load Full Class 11 NCERT
+          </button>
         </div>
       </section>
 
       <div class="flex justify-between items-center gap-2">
         <div class="flex gap-1.5 overflow-x-auto no-scrollbar" id="syllabus-subject-tabs">
-          <button onclick="setSyllabusSubject('Biology')" id="syl-tab-Biology" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 text-slate-950 tap-scale">🧬 Biology</button>
-          <button onclick="setSyllabusSubject('Physics')" id="syl-tab-Physics" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800 tap-scale">⚛️ Physics</button>
-          <button onclick="setSyllabusSubject('Chemistry')" id="syl-tab-Chemistry" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800 tap-scale">🧪 Chemistry</button>
+          <button onclick="setSyllabusSubject('Biology')" id="syl-tab-Biology" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 text-black tap-scale">🧬 Biology</button>
+          <button onclick="setSyllabusSubject('Physics')" id="syl-tab-Physics" class="px-3 py-1.5 rounded-xl text-xs font-bold oled-pill text-neutral-400 tap-scale">⚛️ Physics</button>
+          <button onclick="setSyllabusSubject('Chemistry')" id="syl-tab-Chemistry" class="px-3 py-1.5 rounded-xl text-xs font-bold oled-pill text-neutral-400 tap-scale">🧪 Chemistry</button>
         </div>
         <button onclick="promptAddChapter()" class="px-2.5 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold shrink-0 tap-scale">
           + Chapter
@@ -390,7 +476,7 @@
 
     <!-- FLOATING MINI-PLAYER PILL -->
     <div id="floating-mini-timer" class="fixed bottom-20 w-full max-w-md px-4 z-30 hidden">
-      <div class="bg-slate-900/95 backdrop-blur-xl border border-indigo-500/40 rounded-2xl p-2.5 px-4 flex items-center justify-between shadow-2xl">
+      <div class="bg-[#08080c]/95 backdrop-blur-xl border border-indigo-500/40 rounded-2xl p-2.5 px-4 flex items-center justify-between shadow-2xl">
         <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('focus')">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
           <div>
@@ -405,31 +491,31 @@
       </div>
     </div>
 
-    <!-- 5-TAB BOTTOM NAVIGATION BAR -->
-    <nav class="fixed bottom-0 w-full max-w-md bg-slate-900/95 backdrop-blur-xl border-t border-slate-800/80 px-4 py-2 flex justify-between items-center z-30">
+    <!-- 5-TAB TRUE OLED BOTTOM NAVIGATION BAR -->
+    <nav class="fixed bottom-0 w-full max-w-md bg-black/95 backdrop-blur-xl border-t border-neutral-900 px-4 py-2 flex justify-between items-center z-30">
       <button onclick="switchTab('today')" id="nav-today" class="flex flex-col items-center gap-1 text-indigo-400 tap-scale w-14">
         <i class="fa-solid fa-house-chimney text-base"></i>
         <span class="text-[10px] font-bold">Today</span>
       </button>
 
-      <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center gap-1 text-slate-400 tap-scale w-14">
+      <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center gap-1 text-neutral-500 tap-scale w-14">
         <i class="fa-solid fa-chart-column text-base"></i>
         <span class="text-[10px] font-semibold">Streaks</span>
       </button>
 
-      <button onclick="switchTab('focus')" id="nav-focus" class="flex flex-col items-center gap-1 text-slate-400 tap-scale w-14">
-        <div class="w-11 h-11 -mt-5 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white shadow-xl shadow-indigo-600/40 flex items-center justify-center text-base border-2 border-slate-900">
+      <button onclick="switchTab('focus')" id="nav-focus" class="flex flex-col items-center gap-1 text-neutral-500 tap-scale w-14">
+        <div class="w-11 h-11 -mt-5 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white shadow-xl shadow-indigo-600/40 flex items-center justify-center text-base border-2 border-black">
           <i class="fa-solid fa-stopwatch"></i>
         </div>
         <span class="text-[10px] font-bold text-indigo-300">Timer</span>
       </button>
 
-      <button onclick="switchTab('tests')" id="nav-tests" class="flex flex-col items-center gap-1 text-slate-400 tap-scale w-14">
+      <button onclick="switchTab('tests')" id="nav-tests" class="flex flex-col items-center gap-1 text-neutral-500 tap-scale w-14">
         <i class="fa-solid fa-trophy text-base"></i>
         <span class="text-[10px] font-semibold">Tests</span>
       </button>
 
-      <button onclick="switchTab('syllabus')" id="nav-syllabus" class="flex flex-col items-center gap-1 text-slate-400 tap-scale w-14">
+      <button onclick="switchTab('syllabus')" id="nav-syllabus" class="flex flex-col items-center gap-1 text-neutral-500 tap-scale w-14">
         <i class="fa-solid fa-list-check text-base"></i>
         <span class="text-[10px] font-semibold">Syllabus</span>
       </button>
@@ -437,24 +523,24 @@
 
     <!-- ==================== MODALS ==================== -->
 
-    <!-- MODAL 1: TELEGRAM BOT API CONFIGURATOR & BACKUP -->
-    <div id="telegram-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-      <div class="bg-slate-900 border border-sky-500/40 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
+    <!-- MODAL 1: TELEGRAM BOT API CONFIGURATOR & CLOUD RESTORE -->
+    <div id="telegram-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+      <div class="bg-[#07070b] border border-sky-500/40 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
         <div class="flex justify-between items-center">
           <h3 class="text-base font-extrabold text-white flex items-center gap-2">
             <i class="fa-brands fa-telegram text-sky-400 text-xl"></i> Telegram Bot & Cloud
           </h3>
-          <button onclick="closeTelegramModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="closeTelegramModal()" class="w-7 h-7 rounded-full oled-pill text-neutral-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
-        <p class="text-xs text-slate-400 leading-relaxed">
-          Connect your Telegram Bot from <b>@BotFather</b> to receive live timer logs, daily study reports, mock test cards, and full JSON cloud backups directly in Telegram.
+        <p class="text-xs text-neutral-400 leading-relaxed">
+          Connect your Telegram Bot from <b>@BotFather</b> for instant study logs, mock test cards, mistake notes, and 2-way JSON cloud backups.
         </p>
 
         <div class="space-y-3">
           <div>
             <label class="block text-[10px] font-extrabold uppercase text-sky-400 mb-1">1. Bot API Token (from @BotFather)</label>
-            <input type="password" id="tg-token-input" placeholder="123456789:ABCdefGhIJKlmNoPQRsTUV..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono-num focus:outline-none focus:border-sky-400">
+            <input type="password" id="tg-token-input" placeholder="123456789:ABCdefGhIJKlmNoPQRsTUV..." class="w-full oled-surface rounded-xl px-3 py-2 text-xs text-white font-mono-num focus:outline-none focus:border-sky-400">
           </div>
 
           <div>
@@ -464,42 +550,44 @@
                 <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Detect Chat ID
               </button>
             </div>
-            <input type="text" id="tg-chatid-input" placeholder="e.g., 987654321" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono-num focus:outline-none focus:border-sky-400">
-            <p class="text-[10px] text-slate-500 mt-1">Send "Hi" to your bot on Telegram first, then tap <b>Auto-Detect Chat ID</b>!</p>
+            <input type="text" id="tg-chatid-input" placeholder="e.g., 987654321" class="w-full oled-surface rounded-xl px-3 py-2 text-xs text-white font-mono-num focus:outline-none focus:border-sky-400">
           </div>
 
           <!-- Auto-Send Toggles -->
-          <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-3 space-y-2.5 text-xs">
+          <div class="oled-surface rounded-2xl p-3 space-y-2.5 text-xs">
             <label class="flex items-center justify-between cursor-pointer">
-              <span class="font-semibold text-slate-200">⏱️ Auto-send Focus Timer logs</span>
+              <span class="font-semibold text-neutral-200">⏱️ Auto-send Focus Timer logs</span>
               <input type="checkbox" id="tg-auto-session" checked class="accent-sky-500 w-4 h-4">
             </label>
             <label class="flex items-center justify-between cursor-pointer">
-              <span class="font-semibold text-slate-200">🏆 Auto-send Mock Test scores</span>
+              <span class="font-semibold text-neutral-200">🏆 Auto-send Mock Test scores</span>
               <input type="checkbox" id="tg-auto-test" checked class="accent-sky-500 w-4 h-4">
             </label>
             <label class="flex items-center justify-between cursor-pointer">
-              <span class="font-semibold text-slate-200">🔥 Auto-send 100% Daily Sweep</span>
+              <span class="font-semibold text-neutral-200">🔥 Auto-send 100% Daily Sweep</span>
               <input type="checkbox" id="tg-auto-sweep" checked class="accent-sky-500 w-4 h-4">
             </label>
           </div>
 
-          <button onclick="saveAndTestTelegramBot()" id="tg-save-btn" class="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold py-3 rounded-xl text-xs shadow-lg shadow-sky-500/25 tap-scale flex items-center justify-center gap-2">
+          <button onclick="saveAndTestTelegramBot()" id="tg-save-btn" class="w-full bg-sky-500 hover:bg-sky-400 text-black font-extrabold py-3 rounded-xl text-xs shadow-lg shadow-sky-500/25 tap-scale flex items-center justify-center gap-2">
             <i class="fa-solid fa-paper-plane"></i> Save & Send Test Ping to Bot
           </button>
 
-          <!-- Instant Telegram Push & Local Backup Actions -->
-          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800">
-            <button onclick="sendDailyReportToTelegram()" class="bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold py-2.5 rounded-xl text-[11px] border border-slate-700 tap-scale">
-              📊 Send Daily Report
+          <!-- Instant Telegram Push & Cloud Restore Actions -->
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-900">
+            <button onclick="sendDailyReportToTelegram()" class="oled-pill text-sky-300 font-bold py-2.5 rounded-xl text-[11px] tap-scale">
+              📊 Push Daily Report
             </button>
-            <button onclick="sendBackupFileToTelegram()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold py-2.5 rounded-xl text-[11px] border border-slate-700 tap-scale">
-              ☁️ Backup to Bot
+            <button onclick="sendBackupFileToTelegram()" class="oled-pill text-emerald-400 font-bold py-2.5 rounded-xl text-[11px] tap-scale">
+              ☁️ Push Cloud Backup
             </button>
-            <button onclick="exportData()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-[11px] border border-slate-700 tap-scale">
+            <button onclick="pullLatestBackupFromTelegram()" class="col-span-2 bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-bold py-2.5 rounded-xl text-[11px] tap-scale flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-cloud-arrow-down"></i> Pull Latest Backup from Bot Chat
+            </button>
+            <button onclick="exportData()" class="oled-pill text-neutral-300 font-bold py-2.5 rounded-xl text-[11px] tap-scale">
               💾 Download .JSON
             </button>
-            <label class="bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold py-2.5 rounded-xl text-[11px] border border-slate-700 text-center cursor-pointer tap-scale">
+            <label class="oled-pill text-amber-300 font-bold py-2.5 rounded-xl text-[11px] text-center cursor-pointer tap-scale">
               📂 Restore .JSON
               <input type="file" accept=".json" onchange="importData(event)" class="hidden">
             </label>
@@ -509,21 +597,21 @@
     </div>
 
     <!-- MODAL: ADD NEW GOAL -->
-    <div id="add-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+    <div id="add-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+      <div class="bg-[#07070b] border border-neutral-800 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-base font-extrabold text-white">Add Subject Goal</h3>
-          <button onclick="closeAddModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="closeAddModal()" class="w-7 h-7 rounded-full oled-pill text-neutral-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form id="add-habit-form" onsubmit="addHabit(event)" class="space-y-3.5">
           <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Goal Title</label>
-            <input type="text" id="habit-name" required placeholder="e.g., Physics Kinematics Numericals" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+            <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Goal Title</label>
+            <input type="text" id="habit-name" required placeholder="e.g., Physics Kinematics Numericals" class="w-full oled-surface rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Subject</label>
-              <select id="habit-subject" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white">
+              <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Subject</label>
+              <select id="habit-subject" class="w-full oled-surface rounded-xl px-3 py-2.5 text-xs font-bold text-white">
                 <option value="Physics">⚛️ Physics</option>
                 <option value="Chemistry">🧪 Chemistry</option>
                 <option value="Biology">🧬 Biology</option>
@@ -532,8 +620,8 @@
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Tracking Type</label>
-              <select id="habit-unit" onchange="onUnitTypeChange()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white">
+              <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Tracking Type</label>
+              <select id="habit-unit" onchange="onUnitTypeChange()" class="w-full oled-surface rounded-xl px-3 py-2.5 text-xs font-bold text-white">
                 <option value="mins">⏱️ Minutes (Auto-Timer)</option>
                 <option value="Qs">🧠 MCQs / Questions</option>
                 <option value="times">✅ Simple Check-off</option>
@@ -542,12 +630,12 @@
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Daily Target</label>
-              <input type="number" id="habit-target" min="1" max="600" value="60" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-bold">
+              <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Daily Target</label>
+              <input type="number" id="habit-target" min="1" max="600" value="60" required class="w-full oled-surface rounded-xl px-3 py-2 text-sm text-white font-bold font-mono-num">
             </div>
             <div>
-              <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Icon</label>
-              <select id="habit-icon" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold text-white">
+              <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Icon</label>
+              <select id="habit-icon" class="w-full oled-surface rounded-xl px-3 py-2 text-xs font-semibold text-white">
                 <option value="fa-atom">⚛️ Atom / Physics</option>
                 <option value="fa-flask">🧪 Lab / Chem</option>
                 <option value="fa-dna">🧬 DNA / Bio</option>
@@ -565,29 +653,29 @@
     </div>
 
     <!-- MODAL: LOG MOCK TEST SCORE -->
-    <div id="add-test-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+    <div id="add-test-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+      <div class="bg-[#07070b] border border-neutral-800 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-base font-extrabold text-white">Log Practice / Mock Test</h3>
-          <button onclick="closeAddTestModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="closeAddTestModal()" class="w-7 h-7 rounded-full oled-pill text-neutral-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form onsubmit="saveMockTest(event)" class="space-y-3">
           <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Test Name</label>
-            <input type="text" id="test-name-input" required placeholder="e.g., PT-06 / Intensive Mock 1" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white">
+            <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Test Name</label>
+            <input type="text" id="test-name-input" required placeholder="e.g., PT-05 / Term Exam 02" class="w-full oled-surface rounded-xl px-3.5 py-2 text-sm text-white">
           </div>
           <div class="grid grid-cols-3 gap-2">
             <div>
               <label class="block text-[10px] font-bold uppercase text-indigo-400 mb-1">Physics (180)</label>
-              <input type="number" id="test-phy-input" min="0" max="180" value="145" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-sm font-bold text-white">
+              <input type="number" id="test-phy-input" min="0" max="180" value="145" required class="w-full oled-surface rounded-xl px-2.5 py-2 text-sm font-bold text-white font-mono-num">
             </div>
             <div>
               <label class="block text-[10px] font-bold uppercase text-cyan-400 mb-1">Chem (180)</label>
-              <input type="number" id="test-chem-input" min="0" max="180" value="150" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-sm font-bold text-white">
+              <input type="number" id="test-chem-input" min="0" max="180" value="150" required class="w-full oled-surface rounded-xl px-2.5 py-2 text-sm font-bold text-white font-mono-num">
             </div>
             <div>
               <label class="block text-[10px] font-bold uppercase text-emerald-400 mb-1">Bio (360)</label>
-              <input type="number" id="test-bio-input" min="0" max="360" value="325" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-2 text-sm font-bold text-white">
+              <input type="number" id="test-bio-input" min="0" max="360" value="325" required class="w-full oled-surface rounded-xl px-2.5 py-2 text-sm font-bold text-white font-mono-num">
             </div>
           </div>
           <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm tap-scale">
@@ -597,27 +685,65 @@
       </div>
     </div>
 
+    <!-- MODAL: LOG TEST MISTAKE / WEAK CONCEPT -->
+    <div id="mistake-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+      <div class="bg-[#07070b] border border-rose-500/40 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-base font-extrabold text-white">Log Test Mistake / Concept</h3>
+          <button onclick="closeMistakeModal()" class="w-7 h-7 rounded-full oled-pill text-neutral-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form onsubmit="saveMistakeEntry(event)" class="space-y-3">
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">What went wrong / Formula to remember</label>
+            <input type="text" id="mistake-note-input" required placeholder="e.g., Confused adiabatic work sign convention" class="w-full oled-surface rounded-xl px-3.5 py-2.5 text-sm text-white">
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Subject</label>
+              <select id="mistake-subject-input" class="w-full oled-surface rounded-xl px-3 py-2.5 text-xs font-bold text-white">
+                <option value="Physics">⚛️ Physics</option>
+                <option value="Chemistry">🧪 Chemistry</option>
+                <option value="Biology">🧬 Biology</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Error Type</label>
+              <select id="mistake-type-input" class="w-full oled-surface rounded-xl px-3 py-2.5 text-xs font-bold text-white">
+                <option value="Concept Gap">🧠 Concept Gap</option>
+                <option value="Silly Calc">🔢 Silly Calculation</option>
+                <option value="NCERT Line">📖 Missed NCERT Line</option>
+                <option value="Formula">📐 Formula Forgotten</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-rose-500 hover:bg-rose-400 text-black font-extrabold py-2.5 rounded-xl text-sm tap-scale">
+            Save to Mistake Notebook
+          </button>
+        </form>
+      </div>
+    </div>
+
     <!-- MODAL: ADD SPACED REVISION TOPIC -->
-    <div id="revision-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+    <div id="revision-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+      <div class="bg-[#07070b] border border-neutral-800 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-base font-extrabold text-white">Add Topic to 1-3-7-21d Queue</h3>
-          <button onclick="closeRevisionModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="closeRevisionModal()" class="w-7 h-7 rounded-full oled-pill text-neutral-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form onsubmit="addRevisionTopic(event)" class="space-y-3">
           <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Topic / Sub-chapter Studied</label>
-            <input type="text" id="rev-topic-input" required placeholder="e.g., Bohr Model / Krebs Cycle" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
+            <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Topic / Sub-chapter Studied</label>
+            <input type="text" id="rev-topic-input" required placeholder="e.g., Bohr Model / Krebs Cycle" class="w-full oled-surface rounded-xl px-3.5 py-2.5 text-sm text-white">
           </div>
           <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Subject</label>
-            <select id="rev-subject-input" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white">
+            <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Subject</label>
+            <select id="rev-subject-input" class="w-full oled-surface rounded-xl px-3 py-2.5 text-xs font-bold text-white">
               <option value="Biology">🧬 Biology</option>
               <option value="Physics">⚛️ Physics</option>
               <option value="Chemistry">🧪 Chemistry</option>
             </select>
           </div>
-          <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-2.5 rounded-xl text-sm tap-scale">
+          <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2.5 rounded-xl text-sm tap-scale">
             Schedule Active Recall
           </button>
         </form>
@@ -625,20 +751,20 @@
     </div>
 
     <!-- MODAL: EDIT COUNTDOWN BANNER -->
-    <div id="countdown-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+    <div id="countdown-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+      <div class="bg-[#07070b] border border-neutral-800 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-base font-extrabold text-white">Set Exam / Milestone Target</h3>
-          <button onclick="closeCountdownModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="closeCountdownModal()" class="w-7 h-7 rounded-full oled-pill text-neutral-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <form onsubmit="saveCountdownSettings(event)" class="space-y-3">
           <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Exam / Event Title</label>
-            <input type="text" id="cd-title-input" required placeholder="e.g., Term Exam / Mock Test" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
+            <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Exam / Event Title</label>
+            <input type="text" id="cd-title-input" required placeholder="e.g., Term Exam / Mock Test" class="w-full oled-surface rounded-xl px-3.5 py-2.5 text-sm text-white">
           </div>
           <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Target Date</label>
-            <input type="date" id="cd-date-input" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white">
+            <label class="block text-[11px] font-bold uppercase text-neutral-400 mb-1">Target Date</label>
+            <input type="date" id="cd-date-input" required class="w-full oled-surface rounded-xl px-3.5 py-2.5 text-sm text-white">
           </div>
           <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl text-sm tap-scale">Save Countdown</button>
         </form>
@@ -646,11 +772,11 @@
     </div>
 
     <!-- MODAL: EDIT DAILY SUBJECT MINUTE TARGETS -->
-    <div id="subject-goals-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-      <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+    <div id="subject-goals-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+      <div class="bg-[#07070b] border border-neutral-800 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-base font-extrabold text-white">Daily Subject Targets (Mins)</h3>
-          <button onclick="closeSubjectGoalsModal()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="closeSubjectGoalsModal()" class="w-7 h-7 rounded-full oled-pill text-neutral-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div id="subject-targets-inputs" class="space-y-3"></div>
         <button onclick="saveSubjectTargets()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm tap-scale">
@@ -666,6 +792,118 @@
       if (navigator.vibrate) navigator.vibrate(ms);
     }
 
+    // ==================== BUILT-IN WEB AUDIO FOCUS SYNTHESIZER & CHIME ====================
+    let audioCtx = null;
+    let activeNoiseNode = null;
+    let activeGainNode = null;
+    let currentSoundMode = 'off';
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playCompletionChime() {
+      try {
+        initAudioContext();
+        const now = audioCtx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.14);
+          gain.gain.setValueAtTime(0.18, now + idx * 0.14);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.14 + 0.6);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + idx * 0.14);
+          osc.stop(now + idx * 0.14 + 0.65);
+        });
+      } catch (e) {}
+    }
+
+    function stopFocusSound() {
+      if (activeNoiseNode) {
+        try { activeNoiseNode.stop(); activeNoiseNode.disconnect(); } catch (e) {}
+        activeNoiseNode = null;
+      }
+      if (activeGainNode) {
+        try { activeGainNode.disconnect(); } catch (e) {}
+        activeGainNode = null;
+      }
+    }
+
+    function setFocusSound(mode) {
+      vibrate(15);
+      stopFocusSound();
+      currentSoundMode = mode.trim();
+
+      ['off', 'brown', 'binaural'].forEach(k => {
+        const btn = document.getElementById(`snd-${k}`);
+        if (!btn) return;
+        if (k === currentSoundMode) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-bold bg-indigo-600 text-white tap-scale';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-[10px] font-bold bg-neutral-900 text-neutral-400 border border-neutral-800 tap-scale';
+        }
+      });
+
+      const lbl = document.getElementById('sound-status-label');
+      if (currentSoundMode === 'off') {
+        lbl.innerText = 'Off • Offline Synth';
+        return;
+      }
+
+      initAudioContext();
+      if (currentSoundMode === 'brown') {
+        const bufferSize = audioCtx.sampleRate * 3;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let lastOut = 0.0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          data[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = data[i];
+          data[i] *= 0.18;
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 420;
+
+        noise.connect(filter);
+        filter.connect(audioCtx.destination);
+        noise.start();
+        activeNoiseNode = noise;
+        lbl.innerText = 'Playing Deep Brown Noise';
+      } else if (currentSoundMode === 'binaural') {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc1.frequency.value = 200;
+        osc2.frequency.value = 240; // 40Hz Gamma focus beat
+        gain.gain.value = 0.04;
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc1.start();
+        osc2.start();
+        activeNoiseNode = {
+          stop: () => { osc1.stop(); osc2.stop(); },
+          disconnect: () => { osc1.disconnect(); osc2.disconnect(); }
+        };
+        activeGainNode = gain;
+        lbl.innerText = 'Playing 40Hz Gamma Focus Drone';
+      }
+    }
+
     // ==================== TELEGRAM BOT API ENGINE ====================
     let tgConfig = JSON.parse(localStorage.getItem('focussync_tg_config')) || {
       botToken: '',
@@ -678,9 +916,9 @@
     function updateTelegramStatusIndicator() {
       const dot = document.getElementById('tg-status-dot');
       if (tgConfig.botToken && tgConfig.chatId) {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 border border-slate-900 shadow-sm shadow-emerald-400';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 border border-black shadow-sm shadow-emerald-400';
       } else {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-500 absolute -top-0.5 -right-0.5 border border-slate-900';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-neutral-600 absolute -top-0.5 -right-0.5 border border-black';
       }
     }
 
@@ -731,7 +969,7 @@
           alert('Send a normal text message "Hi" to your bot on Telegram first, then tap Auto-Detect.');
         }
       } catch (e) {
-        alert('Network error while contacting Telegram API. Check your internet connection.');
+        alert('Network error while contacting Telegram API.');
       }
     }
 
@@ -773,7 +1011,7 @@
 
       btn.innerText = 'Sending Test Ping...';
       const ok = await sendTelegramMessage(
-        `🚀 <b>FocusSync Connected!</b>\n📅 <b>Date:</b> ${todayISO}\n⚡ Live study sessions, mock test cards, and daily reports will now sync here automatically!`
+        `🖤 <b>FocusSync True OLED Connected!</b>\n📅 <b>Date:</b> ${todayISO}\n⚡ Live study sessions, mock test cards, mistake notes, and cloud backups are active!`
       );
       btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Save & Send Test Ping to Bot';
 
@@ -782,7 +1020,7 @@
         alert('🎉 Test message delivered! Check your Telegram bot chat.');
         closeTelegramModal();
       } else {
-        alert('❌ Could not send message. Verify your Bot Token and Chat ID, and make sure you pressed "Start" on your bot in Telegram.');
+        alert('❌ Could not send message. Verify your Bot Token and Chat ID.');
       }
     }
 
@@ -802,6 +1040,7 @@
       const totalGoals = appState.habits.length;
       const pctGoals = totalGoals ? Math.round((doneGoals / totalGoals) * 100) : 0;
       const bestStreak = appState.habits.reduce((max, h) => Math.max(max, calculateStreak(h)), 0);
+      const todayMCQs = (appState.dailyMCQs && appState.dailyMCQs[todayISO]) || 0;
 
       let subLines = '';
       Object.keys(SUBJECTS).forEach(sub => {
@@ -818,6 +1057,7 @@
         `📅 <b>Date:</b> ${todayISO}\n` +
         `🔥 <b>Current Streak:</b> ${bestStreak} Days\n` +
         `⏱️ <b>Total Study Time:</b> ${hrs}h ${mins}m\n` +
+        `⚡ <b>MCQs Solved Today:</b> ${todayMCQs} Qs\n` +
         `🎯 <b>Daily Goals Hit:</b> ${doneGoals} / ${totalGoals} (${pctGoals}%)\n\n` +
         `<b>📚 Subject Progress:</b>\n${subLines}\n` +
         `🧠 <b>Active Recall Pending:</b> ${dueRevs} Topics`;
@@ -842,20 +1082,66 @@
         const formData = new FormData();
         formData.append('chat_id', tgConfig.chatId);
         formData.append('document', blob, `focussync_backup_${todayISO}.json`);
-        formData.append('caption', `☁️ FocusSync Full Cloud Backup (${todayISO})\nSave this file to restore your streaks, mock tests, and syllabus anytime!`);
+        formData.append('caption', `☁️ FocusSync Full Cloud Backup (${todayISO})\nForward or send this file back to the bot anytime to 1-tap restore!`);
 
         const res = await fetch(`https://api.telegram.org/bot${tgConfig.botToken}/sendDocument`, {
           method: 'POST',
           body: formData
         });
         const data = await res.json();
-        if (data.ok) {
-          alert('☁️ Full .JSON Backup file sent directly to your Telegram chat!');
+        if (data.ok && data.result && data.result.document) {
+          localStorage.setItem('focussync_last_tg_file_id', data.result.document.file_id);
+          alert('☁️ Full .JSON Cloud Backup sent to your Telegram chat!');
         } else {
           alert('❌ Failed to upload backup file to Telegram.');
         }
       } catch (e) {
         alert('❌ Network error sending backup file.');
+      }
+    }
+
+    async function pullLatestBackupFromTelegram() {
+      vibrate(25);
+      const token = document.getElementById('tg-token-input').value.trim() || tgConfig.botToken;
+      if (!token) {
+        alert('Please enter your Bot Token first!');
+        return;
+      }
+      try {
+        let fileId = localStorage.getItem('focussync_last_tg_file_id');
+        if (!fileId) {
+          const upRes = await fetch(`https://api.telegram.org/bot${token}/getUpdates`);
+          const upData = await upRes.json();
+          if (upData.ok && upData.result) {
+            for (let i = upData.result.length - 1; i >= 0; i--) {
+              const doc = upData.result[i].message && upData.result[i].message.document;
+              if (doc && doc.file_name && doc.file_name.endsWith('.json')) {
+                fileId = doc.file_id;
+                break;
+              }
+            }
+          }
+        }
+        if (!fileId) {
+          alert('To restore from Telegram: Forward or upload your focussync_backup.json file to your Bot in Telegram, then tap this button again!');
+          return;
+        }
+        const fRes = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`);
+        const fData = await fRes.json();
+        if (!fData.ok) {
+          alert('Could not fetch backup file metadata from Telegram.');
+          return;
+        }
+        const dlRes = await fetch(`https://api.telegram.org/file/bot${token}/${fData.result.file_path}`);
+        const imported = await dlRes.json();
+        if (imported && imported.habits) {
+          appState = imported;
+          saveState();
+          closeTelegramModal();
+          alert('🎉 Cloud Backup successfully restored from Telegram!');
+        }
+      } catch (err) {
+        alert('Error pulling cloud backup from Telegram. You can also download the .json from Telegram and use Restore .JSON.');
       }
     }
 
@@ -883,7 +1169,8 @@
       return dates;
     }
 
-    const last7Days = getPastDates(7);
+    const last28Days = getPastDates(28);
+    const last7Days = last28Days.slice(-7);
     const todayISO = last7Days[6].iso;
     let selectedDateISO = todayISO;
     let activeSubjectFilter = 'All';
@@ -904,6 +1191,7 @@
         },
         streakShields: 2,
         frozenDates: {},
+        dailyMCQs: { [todayISO]: 35 },
         subjectTargets: { Physics: 90, Chemistry: 60, Biology: 90, Fitness: 30, Tech: 30 },
         subjectMinutesLog: {
           [d[0].iso]: { Physics: 80, Chemistry: 60, Biology: 90, Fitness: 30, Tech: 20 },
@@ -921,6 +1209,10 @@
         revisions: [
           { id: 101, topic: 'Cell Cycle & Mitosis Diagrams', subject: 'Biology', stageIdx: 1, intervals: [1, 3, 7, 21], nextDueDate: todayISO },
           { id: 102, topic: 'Kinematics Projectile Formulas', subject: 'Physics', stageIdx: 2, intervals: [1, 3, 7, 21], nextDueDate: todayISO }
+        ],
+        mistakes: [
+          { id: 401, subject: 'Physics', type: 'Formula', note: 'Work done in isothermal vs adiabatic expansion sign convention', date: todayISO },
+          { id: 402, subject: 'Biology', type: 'NCERT Line', note: 'Prophase I: Crossing over occurs at Pachytene, chiasmata at Diplotene', date: todayISO }
         ],
         mockTests: [
           { id: 201, name: 'Practice Test 01', date: d[0].iso, phy: 125, chem: 130, bio: 295, total: 550 },
@@ -964,10 +1256,24 @@
     }
 
     let appState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || getDefaultState();
+    if (!appState.mistakes) appState.mistakes = getDefaultState().mistakes;
+    if (!appState.dailyMCQs) appState.dailyMCQs = { [todayISO]: 30 };
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
       renderAll();
+    }
+
+    function logQuickMCQs(count) {
+      vibrate(20);
+      if (!appState.dailyMCQs) appState.dailyMCQs = {};
+      appState.dailyMCQs[selectedDateISO] = (appState.dailyMCQs[selectedDateISO] || 0) + count;
+      appState.habits.forEach(h => {
+        if (h.unit === 'Qs') {
+          h.history[selectedDateISO] = (h.history[selectedDateISO] || 0) + count;
+        }
+      });
+      saveState();
     }
 
     function useStreakShieldToday() {
@@ -1046,6 +1352,39 @@
       sendTelegramMessage(`🧠 <b>Spaced Revision Completed!</b>\n📚 <b>${item.subject}:</b> ${item.topic} (Day-${completedDayStage} Recall ✅)`, true);
     }
 
+    // --- Mistake Notebook Functions ---
+    function openMistakeModal() {
+      document.getElementById('mistake-modal').classList.replace('hidden', 'flex');
+      document.getElementById('mistake-note-input').focus();
+    }
+    function closeMistakeModal() {
+      document.getElementById('mistake-modal').classList.replace('flex', 'hidden');
+    }
+    function saveMistakeEntry(e) {
+      e.preventDefault();
+      const note = document.getElementById('mistake-note-input').value.trim();
+      const subject = document.getElementById('mistake-subject-input').value;
+      const type = document.getElementById('mistake-type-input').value;
+      if (!note) return;
+
+      appState.mistakes.unshift({ id: Date.now(), subject, type, note, date: todayISO });
+      document.getElementById('mistake-note-input').value = '';
+      saveState();
+      closeMistakeModal();
+
+      sendTelegramMessage(
+        `⚠️ <b>New Mistake Notebook Entry</b>\n` +
+        `📚 <b>${subject}</b> (${type})\n` +
+        `📝 <i>"${note}"</i>`,
+        true
+      );
+    }
+    function deleteMistakeEntry(id) {
+      vibrate(15);
+      appState.mistakes = appState.mistakes.filter(m => m.id !== id);
+      saveState();
+    }
+
     // --- Mock Test Tracker + Auto Telegram Push ---
     function openAddTestModal() {
       document.getElementById('add-test-modal').classList.replace('hidden', 'flex');
@@ -1090,15 +1429,86 @@
       }
     }
 
+    // --- Class 11 NCERT Complete Syllabus Pre-Loader ---
+    function preloadClass11NCERT() {
+      vibrate(25);
+      const class11Chapters = [
+        // Biology (19 Chapters)
+        { subject: 'Biology', name: 'The Living World' },
+        { subject: 'Biology', name: 'Biological Classification' },
+        { subject: 'Biology', name: 'Plant Kingdom' },
+        { subject: 'Biology', name: 'Animal Kingdom' },
+        { subject: 'Biology', name: 'Morphology of Flowering Plants' },
+        { subject: 'Biology', name: 'Anatomy of Flowering Plants' },
+        { subject: 'Biology', name: 'Structural Organisation in Animals' },
+        { subject: 'Biology', name: 'Cell: The Unit of Life' },
+        { subject: 'Biology', name: 'Biomolecules' },
+        { subject: 'Biology', name: 'Cell Cycle and Cell Division' },
+        { subject: 'Biology', name: 'Photosynthesis in Higher Plants' },
+        { subject: 'Biology', name: 'Respiration in Plants' },
+        { subject: 'Biology', name: 'Plant Growth and Development' },
+        { subject: 'Biology', name: 'Breathing and Exchange of Gases' },
+        { subject: 'Biology', name: 'Body Fluids and Circulation' },
+        { subject: 'Biology', name: 'Excretory Products and their Elimination' },
+        { subject: 'Biology', name: 'Locomotion and Movement' },
+        { subject: 'Biology', name: 'Neural Control and Coordination' },
+        { subject: 'Biology', name: 'Chemical Coordination and Integration' },
+        // Physics (14 Chapters)
+        { subject: 'Physics', name: 'Units and Measurements' },
+        { subject: 'Physics', name: 'Motion in a Straight Line' },
+        { subject: 'Physics', name: 'Motion in a Plane' },
+        { subject: 'Physics', name: 'Laws of Motion' },
+        { subject: 'Physics', name: 'Work, Energy and Power' },
+        { subject: 'Physics', name: 'System of Particles & Rotational Motion' },
+        { subject: 'Physics', name: 'Gravitation' },
+        { subject: 'Physics', name: 'Mechanical Properties of Solids' },
+        { subject: 'Physics', name: 'Mechanical Properties of Fluids' },
+        { subject: 'Physics', name: 'Thermal Properties of Matter' },
+        { subject: 'Physics', name: 'Thermodynamics' },
+        { subject: 'Physics', name: 'Kinetic Theory' },
+        { subject: 'Physics', name: 'Oscillations' },
+        { subject: 'Physics', name: 'Waves' },
+        // Chemistry (9 Chapters)
+        { subject: 'Chemistry', name: 'Some Basic Concepts of Chemistry' },
+        { subject: 'Chemistry', name: 'Structure of Atom' },
+        { subject: 'Chemistry', name: 'Classification of Elements & Periodicity' },
+        { subject: 'Chemistry', name: 'Chemical Bonding and Molecular Structure' },
+        { subject: 'Chemistry', name: 'Chemical Thermodynamics' },
+        { subject: 'Chemistry', name: 'Equilibrium' },
+        { subject: 'Chemistry', name: 'Redox Reactions' },
+        { subject: 'Chemistry', name: 'Organic Chemistry: Basic Principles' },
+        { subject: 'Chemistry', name: 'Hydrocarbons' }
+      ];
+
+      let added = 0;
+      class11Chapters.forEach((ch, idx) => {
+        const exists = appState.syllabus.some(s => s.subject === ch.subject && s.name.toLowerCase() === ch.name.toLowerCase());
+        if (!exists) {
+          appState.syllabus.push({
+            id: Date.now() + idx,
+            subject: ch.subject,
+            name: ch.name,
+            concept: false,
+            ncert: false,
+            pyq: false
+          });
+          added++;
+        }
+      });
+
+      saveState();
+      alert(added > 0 ? `📚 Loaded ${added} new Class 11 NCERT chapters across Biology, Physics, and Chemistry!` : '✅ All Class 11 NCERT chapters are already in your tracker!');
+    }
+
     function setSyllabusSubject(sub) {
       vibrate(12);
       activeSyllabusSubject = sub;
       ['Biology', 'Physics', 'Chemistry'].forEach(s => {
         const btn = document.getElementById(`syl-tab-${s}`);
         if (s === sub) {
-          btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold ${SUBJECTS[s].bg} text-slate-950 tap-scale`;
+          btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold ${SUBJECTS[s].bg} text-black tap-scale`;
         } else {
-          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800 tap-scale';
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold oled-pill text-neutral-400 tap-scale';
         }
       });
       renderSyllabusView();
@@ -1180,6 +1590,7 @@
           timerState.sessionTotalLoggedMins = 0;
           savePersistentTimerState();
           updateTimerUI();
+          playCompletionChime();
           vibrate([120, 80, 150]);
           if (typeof confetti === 'function') confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
 
@@ -1328,11 +1739,11 @@
 
       if (timerState.type === 'countdown') {
         cdBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition';
-        swBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-400 transition';
+        swBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-neutral-400 transition';
         controls.classList.remove('hidden');
       } else {
         swBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition';
-        cdBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-slate-400 transition';
+        cdBtn.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold text-neutral-400 transition';
         controls.classList.add('hidden');
       }
 
@@ -1365,7 +1776,7 @@
 
       document.getElementById('timer-sub-status').innerText = timerState.isRunning
         ? `⚡ BG-Safe Active (+${timerState.unloggedSec}s towards next min)`
-        : '⚡ Silent Background-Proof Clock Ready';
+        : '⚡ OLED Background-Safe Clock Ready';
 
       updateFloatingMiniTimerVisibility();
     }
@@ -1382,7 +1793,7 @@
         if (wakeLockSentinel) {
           await wakeLockSentinel.release();
           wakeLockSentinel = null;
-          btn.className = 'px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-bold text-slate-400 flex items-center gap-1.5 tap-scale';
+          btn.className = 'px-3 py-2 rounded-xl bg-black border border-neutral-800 text-[11px] font-bold text-neutral-400 flex items-center gap-1.5 tap-scale';
           txt.innerText = 'Wake Lock';
         } else {
           wakeLockSentinel = await navigator.wakeLock.request('screen');
@@ -1407,577 +1818,149 @@
       return streak;
     }
 
-    function addSubjectMinutes(subject, minsToAdd, dateISO = todayISO, specificHabitId = null) {
-      if (minsToAdd <= 0) return;
+function addSubjectMinutes(subject, minsToAdd, dateISO = todayISO, specificHabitId = null) {
       if (!appState.subjectMinutesLog[dateISO]) {
         appState.subjectMinutesLog[dateISO] = { Physics: 0, Chemistry: 0, Biology: 0, Fitness: 0, Tech: 0 };
       }
       appState.subjectMinutesLog[dateISO][subject] = (appState.subjectMinutesLog[dateISO][subject] || 0) + minsToAdd;
 
-      appState.habits.forEach(h => {
-        if (specificHabitId && h.id === Number(specificHabitId)) {
-          h.history[dateISO] = (h.history[dateISO] || 0) + minsToAdd;
-        } else if (!specificHabitId && h.subject === subject && h.unit === 'mins') {
-          h.history[dateISO] = (h.history[dateISO] || 0) + minsToAdd;
+      let targetHabit = null;
+      if (specificHabitId) {
+        targetHabit = appState.habits.find(h => String(h.id) === String(specificHabitId));
+      }
+      if (!targetHabit) {
+        targetHabit = appState.habits.find(h => h.subject === subject && h.unit === 'mins');
+      }
+      if (targetHabit) {
+        const wasDone = isGoalDone(targetHabit, dateISO);
+        targetHabit.history[dateISO] = (targetHabit.history[dateISO] || 0) + minsToAdd;
+        const nowDone = isGoalDone(targetHabit, dateISO);
+        if (!wasDone && nowDone) {
+          checkDailyFullSweep(dateISO);
         }
-      });
+      }
 
       const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      appState.sessions.unshift({ time: nowStr, subject, mins: minsToAdd, date: dateISO });
+      const existingTop = appState.sessions[0];
+      if (existingTop && existingTop.date === dateISO && existingTop.subject === subject) {
+        existingTop.mins += minsToAdd;
+        existingTop.time = nowStr;
+      } else {
+        appState.sessions.unshift({ time: nowStr, subject, mins: minsToAdd, date: dateISO });
+      }
+      if (appState.sessions.length > 30) appState.sessions.pop();
+
       saveState();
     }
 
-    function stepHabit(habitId, dateISO, forceToggle = false) {
-      vibrate(20);
-      const habit = appState.habits.find(h => h.id === habitId);
-      if (!habit) return;
-
-      const current = habit.history[dateISO] || 0;
-      const target = habit.target || 1;
-      const wasAllDone = appState.habits.length > 0 && appState.habits.every(h => isGoalDone(h, dateISO));
-
-      let delta = 0;
-      if (target === 1 || forceToggle) {
-        const nextVal = current >= target ? 0 : target;
-        delta = nextVal - current;
-        habit.history[dateISO] = nextVal;
-      } else {
-        const step = habit.unit === 'mins' ? 15 : (target >= 20 ? 10 : 1);
-        const nextVal = current + step > target ? (current < target ? target : 0) : current + step;
-        delta = nextVal - current;
-        habit.history[dateISO] = nextVal;
-      }
-
-      if (habit.unit === 'mins' && delta !== 0) {
-        if (!appState.subjectMinutesLog[dateISO]) {
-          appState.subjectMinutesLog[dateISO] = { Physics: 0, Chemistry: 0, Biology: 0, Fitness: 0, Tech: 0 };
-        }
-        appState.subjectMinutesLog[dateISO][habit.subject] = Math.max(0, (appState.subjectMinutesLog[dateISO][habit.subject] || 0) + delta);
-      }
-
-      const nowAllDone = appState.habits.length > 0 && appState.habits.every(h => isGoalDone(h, dateISO));
-      if (!wasAllDone && nowAllDone) {
-        if (typeof confetti === 'function') {
-          vibrate([50, 50, 100]);
-          confetti({ particleCount: 75, spread: 65, origin: { y: 0.7 } });
-        }
+    function checkDailyFullSweep(dateISO) {
+      if (dateISO !== todayISO) return;
+      const allDone = appState.habits.length > 0 && appState.habits.every(h => isGoalDone(h, todayISO));
+      if (allDone) {
+        playCompletionChime();
+        if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
         if (tgConfig.autoSweep) {
           sendDailyReportToTelegram(true);
         }
       }
-      saveState();
     }
 
-    function startFocusForHabit(habitId) {
-      vibrate(25);
+    function incrementHabitProgress(habitId, stepAmount) {
+      vibrate(18);
       const habit = appState.habits.find(h => h.id === habitId);
       if (!habit) return;
 
-      document.getElementById('timer-subject-select').value = habit.subject;
-      onTimerSubjectChange();
-      document.getElementById('timer-habit-select').value = habit.id;
+      const wasDone = isGoalDone(habit, selectedDateISO);
+      const cur = habit.history[selectedDateISO] || 0;
+      const target = habit.target || 1;
 
-      if (habit.unit === 'mins' && !timerState.isRunning) {
-        const remaining = Math.max(5, (habit.target || 45) - (habit.history[todayISO] || 0));
-        setCustomTimerMinutes(remaining);
+      if (cur >= target) {
+        habit.history[selectedDateISO] = 0;
+      } else {
+        const added = Math.min(target - cur, stepAmount);
+        habit.history[selectedDateISO] = cur + added;
+        if (habit.unit === 'mins') {
+          if (!appState.subjectMinutesLog[selectedDateISO]) {
+            appState.subjectMinutesLog[selectedDateISO] = { Physics: 0, Chemistry: 0, Biology: 0, Fitness: 0, Tech: 0 };
+          }
+          appState.subjectMinutesLog[selectedDateISO][habit.subject] =
+            (appState.subjectMinutesLog[selectedDateISO][habit.subject] || 0) + added;
+        } else if (habit.unit === 'Qs') {
+          if (!appState.dailyMCQs) appState.dailyMCQs = {};
+          appState.dailyMCQs[selectedDateISO] = (appState.dailyMCQs[selectedDateISO] || 0) + added;
+        }
       }
-      savePersistentTimerState();
-      switchTab('focus');
+
+      const nowDone = isGoalDone(habit, selectedDateISO);
+      saveState();
+      if (!wasDone && nowDone) {
+        if (typeof confetti === 'function') confetti({ particleCount: 45, spread: 60, origin: { y: 0.7 } });
+        checkDailyFullSweep(selectedDateISO);
+      }
     }
 
-    function quickLaunchSubjectTimer(subject) {
-      vibrate(18);
-      document.getElementById('timer-subject-select').value = subject;
-      onTimerSubjectChange();
-      savePersistentTimerState();
-      switchTab('focus');
-    }
-
-    function onTimerSubjectChange() {
-      const subject = document.getElementById('timer-subject-select').value;
-      const habitSelect = document.getElementById('timer-habit-select');
-      const matchingHabits = appState.habits.filter(h => h.subject === subject);
-      habitSelect.innerHTML = `<option value="">All ${subject} Goals (Auto)</option>` +
-        matchingHabits.map(h => `<option value="${h.id}">${h.name} (${h.history[todayISO] || 0}/${h.target}${h.unit})</option>`).join('');
+    function quickStartHabitTimer(habitId) {
+      vibrate(20);
+      const habit = appState.habits.find(h => h.id === habitId);
+      if (!habit) return;
+      timerState.subject = habit.subject;
+      timerState.habitId = String(habit.id);
+      document.getElementById('timer-subject-select').value = habit.subject;
+      populateTimerHabitDropdown();
+      document.getElementById('timer-habit-select').value = String(habit.id);
       savePersistentTimerState();
       updateTimerUI();
+      switchTab('focus');
     }
 
     function deleteHabit(habitId) {
-      if (confirm('Remove this goal?')) {
+      if (confirm('Remove this goal from your daily tracker?')) {
         appState.habits = appState.habits.filter(h => h.id !== habitId);
         saveState();
       }
     }
 
-    // ==================== MASTER RENDER ENGINE ====================
-    function renderAll() {
-      const habits = appState.habits;
-      const totalHabits = habits.length;
-
-      document.getElementById('countdown-title-display').innerText = appState.countdown.title || 'Next Target';
-      const diffMs = new Date(appState.countdown.targetDate) - new Date(todayISO);
-      const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-      document.getElementById('countdown-days-display').innerText = diffDays === 0 ? 'Today!' : `${diffDays} Days Left`;
-
-      document.getElementById('shield-count').innerText = appState.streakShields;
-      const todaySubLog = appState.subjectMinutesLog[todayISO] || {};
-      const todayTotalMins = Object.values(todaySubLog).reduce((a, b) => a + b, 0);
-      document.getElementById('total-hours-badge').innerText = `${Math.floor(todayTotalMins / 60)}h ${todayTotalMins % 60}m Today`;
-
-      let totalChecks = 0;
-      habits.forEach(h => {
-        Object.keys(h.history).forEach(d => { if (h.history[d] >= h.target) totalChecks++; });
-      });
-      const xp = totalChecks * 20 + Math.floor(todayTotalMins / 5);
-      document.getElementById('level-badge').innerText = `LVL ${Math.floor(xp / 100) + 1}`;
-      document.getElementById('xp-bar').style.width = `${xp % 100}%`;
-
-      const bestStreak = habits.reduce((max, h) => Math.max(max, calculateStreak(h)), 0);
-      document.getElementById('top-streak').innerText = `${bestStreak}d`;
-
-      const ribbon = document.getElementById('date-ribbon');
-      ribbon.innerHTML = '';
-      last7Days.forEach(day => {
-        const isSel = day.iso === selectedDateISO;
-        const doneCount = habits.filter(h => isGoalDone(h, day.iso)).length;
-        const allDone = totalHabits > 0 && doneCount === totalHabits;
-        const isFrozen = !!appState.frozenDates[day.iso];
-
-        const btn = document.createElement('button');
-        btn.onclick = () => { vibrate(12); selectedDateISO = day.iso; renderAll(); };
-        btn.className = `tap-scale py-2 rounded-2xl flex flex-col items-center justify-center border transition ${
-          isSel ? 'bg-indigo-600 border-indigo-400 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-900/80 border-slate-800 text-slate-400'
-        }`;
-        btn.innerHTML = `
-          <span class="text-[10px] font-bold uppercase">${day.shortDay}</span>
-          <span class="text-sm font-extrabold mt-0.5 ${isSel ? 'text-white' : 'text-slate-200'}">${day.dateNum}</span>
-          <span class="w-1.5 h-1.5 rounded-full mt-1 ${isFrozen ? 'bg-cyan-400' : allDone ? 'bg-emerald-400' : doneCount > 0 ? 'bg-amber-400' : 'bg-slate-700'}"></span>
-        `;
-        ribbon.appendChild(btn);
-      });
-
-      const doneOnSelected = habits.filter(h => isGoalDone(h, selectedDateISO)).length;
-      const pctSelected = totalHabits === 0 ? 0 : Math.round((doneOnSelected / totalHabits) * 100);
-      const selObj = last7Days.find(d => d.iso === selectedDateISO);
-      document.getElementById('selected-date-label').innerText = selObj && selObj.isToday ? "TODAY'S COMPLETION" : `LOG FOR ${selObj.shortDay.toUpperCase()} ${selObj.dateNum}`;
-      document.getElementById('progress-text').innerText = `${doneOnSelected} / ${totalHabits} Goals`;
-      document.getElementById('progress-percent').innerText = `${pctSelected}%`;
-      document.getElementById('progress-ring').setAttribute('stroke-dasharray', `${pctSelected}, 100`);
-
-      const subContainer = document.getElementById('subject-bars-container');
-      subContainer.innerHTML = '';
-      const daySubMins = appState.subjectMinutesLog[selectedDateISO] || {};
-
-      Object.keys(SUBJECTS).forEach(subKey => {
-        const meta = SUBJECTS[subKey];
-        const logged = daySubMins[subKey] || 0;
-        const target = appState.subjectTargets[subKey] || 60;
-        const pct = Math.min(100, Math.round((logged / target) * 100));
-
-        const row = document.createElement('div');
-        row.className = 'space-y-1';
-        row.innerHTML = `
-          <div class="flex justify-between items-center text-xs">
-            <span class="font-bold text-slate-200 flex items-center gap-1.5"><span>${meta.emoji}</span> ${meta.label}</span>
-            <div class="flex items-center gap-2">
-              <span class="font-mono-num text-[11px] font-bold ${logged >= target ? 'text-emerald-400' : 'text-slate-400'}">${logged}/${target}m (${pct}%)</span>
-              <button onclick="quickLaunchSubjectTimer('${subKey}')" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 ${meta.text} border border-slate-700 tap-scale">
-                <i class="fa-solid fa-play text-[9px]"></i> Timer
-              </button>
-            </div>
-          </div>
-          <div class="w-full bg-slate-800/90 h-2 rounded-full overflow-hidden">
-            <div class="${meta.bg} h-full progress-bar-fill rounded-full" style="width: ${pct}%"></div>
-          </div>
-        `;
-        subContainer.appendChild(row);
-      });
-
-      const revList = document.getElementById('revision-queue-list');
-      if (appState.revisions.length === 0) {
-        revList.innerHTML = `<p class="text-xs text-slate-500 text-center py-1">No active recall topics in queue. Tap + Add Topic!</p>`;
+    function toggleMatrixCell(habitId, dateISO) {
+      vibrate(15);
+      const habit = appState.habits.find(h => h.id === habitId);
+      if (!habit) return;
+      if (isGoalDone(habit, dateISO)) {
+        habit.history[dateISO] = 0;
       } else {
-        revList.innerHTML = appState.revisions.map(r => {
-          const meta = SUBJECTS[r.subject] || SUBJECTS.Biology;
-          const isDue = r.nextDueDate <= todayISO;
-          const stageDay = r.intervals[r.stageIdx] || 21;
-          return `
-            <div class="flex items-center justify-between bg-slate-900/80 border ${isDue ? 'border-amber-500/40' : 'border-slate-800'} px-3 py-2 rounded-xl">
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded ${meta.soft} ${meta.text}">${r.subject}</span>
-                  <span class="text-[10px] font-bold text-amber-400">Day-${stageDay} Recall</span>
-                </div>
-                <p class="text-xs font-bold text-white truncate mt-0.5">${r.topic}</p>
-              </div>
-              <button onclick="completeRevisionStep(${r.id})" class="px-2.5 py-1.5 rounded-lg ${isDue ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'} text-[11px] font-extrabold tap-scale shrink-0">
-                ${isDue ? '✓ Revised' : `Due ${r.nextDueDate.slice(5)}`}
-              </button>
-            </div>
-          `;
-        }).join('');
+        habit.history[dateISO] = habit.target || 1;
       }
-
-      const pillsContainer = document.getElementById('subject-filter-pills');
-      pillsContainer.innerHTML = '';
-      ['All', ...Object.keys(SUBJECTS)].forEach(sub => {
-        const isAct = activeSubjectFilter === sub;
-        const emoji = sub === 'All' ? '🎯' : SUBJECTS[sub].emoji;
-        const btn = document.createElement('button');
-        btn.onclick = () => { vibrate(10); activeSubjectFilter = sub; renderAll(); };
-        btn.className = `px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap tap-scale transition ${
-          isAct ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'bg-slate-900 text-slate-400 border border-slate-800'
-        }`;
-        btn.innerText = `${emoji} ${sub}`;
-        pillsContainer.appendChild(btn);
-      });
-
-      const listEl = document.getElementById('today-habits-list');
-      listEl.innerHTML = '';
-      const filtered = activeSubjectFilter === 'All' ? habits : habits.filter(h => h.subject === activeSubjectFilter);
-
-      filtered.forEach(habit => {
-        const meta = SUBJECTS[habit.subject] || SUBJECTS.Physics;
-        const cur = habit.history[selectedDateISO] || 0;
-        const tgt = habit.target || 1;
-        const done = cur >= tgt;
-        const pct = Math.min(100, Math.round((cur / tgt) * 100));
-        const streak = calculateStreak(habit);
-
-        const card = document.createElement('div');
-        card.className = `glass-card rounded-2xl p-3.5 transition border ${done ? 'border-emerald-500/40 bg-slate-900/90' : 'border-slate-800'}`;
-        card.innerHTML = `
-          <div class="flex items-center justify-between gap-2.5">
-            <div class="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onclick="stepHabit(${habit.id}, '${selectedDateISO}')">
-              <div class="w-11 h-11 rounded-2xl ${meta.soft} ${meta.text} flex items-center justify-center text-base shrink-0">
-                <i class="fa-solid ${habit.icon}"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded ${meta.soft} ${meta.text}">${habit.subject}</span>
-                  <span class="text-[11px] font-bold text-amber-400"><i class="fa-solid fa-fire text-[10px]"></i> ${streak}d</span>
-                </div>
-                <h4 class="text-sm font-bold truncate mt-0.5 ${done ? 'line-through text-slate-400' : 'text-white'}">${habit.name}</h4>
-                <p class="text-[11px] text-slate-400 font-mono-num">${cur} / ${tgt} ${habit.unit}</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-1.5 shrink-0">
-              ${habit.unit === 'mins' ? `
-                <button onclick="startFocusForHabit(${habit.id})" class="tap-scale px-2.5 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold flex items-center gap-1">
-                  <i class="fa-solid fa-stopwatch"></i>
-                </button>
-              ` : ''}
-              <button onclick="stepHabit(${habit.id}, '${selectedDateISO}')" class="tap-scale px-2.5 h-9 rounded-xl font-bold text-xs border ${done ? `${meta.bg} text-slate-950 border-transparent` : 'bg-slate-800 text-slate-200 border-slate-700'}">
-                ${done ? '<i class="fa-solid fa-check"></i>' : (habit.unit === 'mins' ? '+15m' : (tgt >= 20 ? '+10' : '+1'))}
-              </button>
-              <button onclick="deleteHabit(${habit.id})" class="text-slate-600 hover:text-rose-400 px-1 py-1 text-xs">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </div>
-          </div>
-          <div class="w-full bg-slate-800/90 h-1.5 rounded-full mt-2.5 overflow-hidden">
-            <div class="${meta.bg} h-full progress-bar-fill" style="width: ${pct}%"></div>
-          </div>
-        `;
-        listEl.appendChild(card);
-      });
-
-      renderAnalyticsView();
-      renderSessionLogs();
-      renderTestsView();
-      renderSyllabusView();
+      saveState();
     }
 
-    function renderAnalyticsView() {
-      const habits = appState.habits;
-      const totalHabits = habits.length;
-      const stackedBars = document.getElementById('stacked-subject-bars');
-      const stackedLabels = document.getElementById('stacked-subject-labels');
-      stackedBars.innerHTML = '';
-      stackedLabels.innerHTML = '';
-
-      let sevenDayTotalMins = 0;
-      const maxDailyScale = 300;
-
-      last7Days.forEach(day => {
-        const subLog = appState.subjectMinutesLog[day.iso] || {};
-        const dayTotal = Object.values(subLog).reduce((a, b) => a + b, 0);
-        sevenDayTotalMins += dayTotal;
-
-        let segmentsHTML = '';
-        Object.keys(SUBJECTS).forEach(subKey => {
-          const mins = subLog[subKey] || 0;
-          if (mins > 0) {
-            const heightPct = Math.min(100, Math.round((mins / maxDailyScale) * 100));
-            segmentsHTML += `<div class="w-full ${SUBJECTS[subKey].bg}" style="height: ${Math.max(heightPct, 4)}%"></div>`;
-          }
-        });
-
-        const col = document.createElement('div');
-        col.className = 'flex flex-col items-center justify-end h-full';
-        col.innerHTML = `
-          <span class="text-[9px] font-mono-num font-bold text-slate-400 mb-1">${Math.round(dayTotal / 60 * 10) / 10}h</span>
-          <div class="w-full max-w-[26px] bg-slate-800/80 rounded-t-lg h-24 flex flex-col-reverse overflow-hidden p-0.5 gap-[1px]">${segmentsHTML}</div>
-        `;
-        stackedBars.appendChild(col);
-
-        const lbl = document.createElement('div');
-        lbl.className = `text-[11px] font-bold ${day.isToday ? 'text-indigo-400' : 'text-slate-400'}`;
-        lbl.innerText = day.shortDay;
-        stackedLabels.appendChild(lbl);
-      });
-
-      const weeklyBars = document.getElementById('weekly-bars');
-      const weeklyLabels = document.getElementById('weekly-labels');
-      weeklyBars.innerHTML = '';
-      weeklyLabels.innerHTML = '';
-
-      let weekGoalsHit = 0;
-      last7Days.forEach(day => {
-        const done = habits.filter(h => isGoalDone(h, day.iso)).length;
-        weekGoalsHit += done;
-        const pct = totalHabits === 0 ? 0 : Math.round((done / totalHabits) * 100);
-
-        const col = document.createElement('div');
-        col.className = 'flex flex-col items-center justify-end h-full';
-        col.innerHTML = `
-          <span class="text-[10px] font-bold text-slate-400 mb-1">${pct}%</span>
-          <div class="w-full max-w-[26px] bg-slate-800/80 rounded-t-lg h-20 flex items-end p-0.5">
-            <div class="bar-fill w-full rounded-t-md ${day.isToday ? 'bg-indigo-500' : 'bg-emerald-500'}" style="height: ${Math.max(pct, 6)}%"></div>
-          </div>
-        `;
-        weeklyBars.appendChild(col);
-
-        const lbl = document.createElement('div');
-        lbl.className = `text-[11px] font-bold ${day.isToday ? 'text-indigo-400' : 'text-slate-400'}`;
-        lbl.innerText = day.shortDay;
-        weeklyLabels.appendChild(lbl);
-      });
-
-      const weekAvg = totalHabits === 0 ? 0 : Math.round((weekGoalsHit / (totalHabits * 7)) * 100);
-      document.getElementById('weekly-avg-badge').innerText = `${weekAvg}% Avg`;
-      document.getElementById('stat-7d-rate').innerText = `${weekAvg}%`;
-      document.getElementById('stat-7d-hours').innerText = `${(sevenDayTotalMins / 60).toFixed(1)}h`;
-      const bestStreak = habits.reduce((max, h) => Math.max(max, calculateStreak(h)), 0);
-      document.getElementById('stat-best-streak').innerText = `${bestStreak}d`;
-
-      const matrix = document.getElementById('streak-matrix');
-      matrix.innerHTML = '';
-      habits.forEach(habit => {
-        const meta = SUBJECTS[habit.subject] || SUBJECTS.Physics;
-        let circles = '';
-        last7Days.forEach(day => {
-          const done = isGoalDone(habit, day.iso);
-          circles += `
-            <button onclick="stepHabit(${habit.id}, '${day.iso}', true)" class="tap-scale flex flex-col items-center gap-1">
-              <span class="text-[9px] font-bold ${day.isToday ? 'text-indigo-400' : 'text-slate-500'}">${day.shortDay[0]}</span>
-              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${done ? `${meta.bg} text-slate-950` : 'bg-slate-800 text-slate-500 border border-slate-700'}">
-                ${done ? '<i class="fa-solid fa-check text-[10px]"></i>' : day.dateNum}
-              </div>
-            </button>
-          `;
-        });
-
-        const row = document.createElement('div');
-        row.className = 'space-y-1.5';
-        row.innerHTML = `
-          <div class="flex justify-between items-center text-xs">
-            <span class="font-bold text-slate-200"><i class="fa-solid ${habit.icon} ${meta.text} mr-1.5"></i>${habit.name}</span>
-            <span class="text-[11px] text-slate-400">${last7Days.filter(d => isGoalDone(habit, d.iso)).length}/7d</span>
-          </div>
-          <div class="grid grid-cols-7 gap-1 pt-0.5">${circles}</div>
-        `;
-        matrix.appendChild(row);
-      });
-    }
-
-    function renderTestsView() {
-      const tests = appState.mockTests || [];
-      const barsEl = document.getElementById('test-chart-bars');
-      const labelsEl = document.getElementById('test-chart-labels');
-      const listEl = document.getElementById('test-history-list');
-
-      if (tests.length === 0) {
-        document.getElementById('test-latest-score').innerText = '0/720';
-        document.getElementById('test-best-score').innerText = '0';
-        document.getElementById('test-avg-score').innerText = '0';
-        barsEl.innerHTML = '';
-        labelsEl.innerHTML = '';
-        listEl.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">No practice tests logged yet. Tap "+ Log Test" above!</p>`;
-        return;
-      }
-
-      const latest = tests[tests.length - 1];
-      const best = Math.max(...tests.map(t => t.total));
-      const avg = Math.round(tests.reduce((a, b) => a + b.total, 0) / tests.length);
-
-      document.getElementById('test-latest-score').innerText = `${latest.total}/720`;
-      document.getElementById('test-best-score').innerText = `${best}`;
-      document.getElementById('test-avg-score').innerText = `${avg}`;
-
-      const recent6 = tests.slice(-6);
-      barsEl.innerHTML = '';
-      labelsEl.innerHTML = '';
-
-      recent6.forEach(t => {
-        const phyPct = Math.round((t.phy / 720) * 100);
-        const chemPct = Math.round((t.chem / 720) * 100);
-        const bioPct = Math.round((t.bio / 720) * 100);
-
-        const col = document.createElement('div');
-        col.className = 'flex flex-col items-center justify-end h-full';
-        col.innerHTML = `
-          <span class="text-[9px] font-mono-num font-bold text-slate-300 mb-1">${t.total}</span>
-          <div class="w-full max-w-[28px] bg-slate-800/80 rounded-t-lg h-24 flex flex-col-reverse overflow-hidden p-0.5 gap-[1px]">
-            <div class="w-full bg-indigo-500" style="height: ${phyPct}%"></div>
-            <div class="w-full bg-cyan-400" style="height: ${chemPct}%"></div>
-            <div class="w-full bg-emerald-500" style="height: ${bioPct}%"></div>
-          </div>
-        `;
-        barsEl.appendChild(col);
-
-        const lbl = document.createElement('div');
-        lbl.className = 'text-[10px] font-bold text-slate-400 truncate';
-        lbl.innerText = t.name.replace('Practice Test ', 'PT');
-        labelsEl.appendChild(lbl);
-      });
-
-      listEl.innerHTML = [...tests].reverse().map(t => `
-        <div class="glass-card rounded-2xl p-3.5 flex items-center justify-between">
-          <div>
-            <div class="flex items-center gap-2">
-              <h4 class="text-sm font-bold text-white">${t.name}</h4>
-              <span class="text-[10px] text-slate-400">${t.date}</span>
-            </div>
-            <div class="flex items-center gap-3 mt-1 text-[11px] font-bold">
-              <span class="text-indigo-400">⚛️ P: ${t.phy}</span>
-              <span class="text-cyan-400">🧪 C: ${t.chem}</span>
-              <span class="text-emerald-400">🧬 B: ${t.bio}</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2.5">
-            <span class="text-base font-extrabold text-white font-mono-num bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-700">${t.total}<span class="text-[10px] text-slate-400">/720</span></span>
-            <button onclick="deleteMockTest(${t.id})" class="text-slate-600 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash-can"></i></button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function renderSyllabusView() {
-      const allChaps = appState.syllabus || [];
-      const totalStages = allChaps.length * 3;
-      const doneStages = allChaps.reduce((acc, c) => acc + (c.concept ? 1 : 0) + (c.ncert ? 1 : 0) + (c.pyq ? 1 : 0), 0);
-      const masterPct = totalStages === 0 ? 0 : Math.round((doneStages / totalStages) * 100);
-
-      document.getElementById('syllabus-total-pct').innerText = `${masterPct}%`;
-      document.getElementById('syllabus-master-bar').style.width = `${masterPct}%`;
-
-      const filtered = allChaps.filter(c => c.subject === activeSyllabusSubject);
-      const container = document.getElementById('syllabus-chapters-list');
-
-      container.innerHTML = filtered.map(c => {
-        const meta = SUBJECTS[c.subject] || SUBJECTS.Biology;
-        const doneCount = (c.concept ? 1 : 0) + (c.ncert ? 1 : 0) + (c.pyq ? 1 : 0);
-        return `
-          <div class="glass-card rounded-2xl p-3.5 space-y-2.5 border ${doneCount === 3 ? 'border-emerald-500/40' : 'border-slate-800'}">
-            <div class="flex justify-between items-center">
-              <h4 class="text-xs font-bold text-white">${meta.emoji} ${c.name}</h4>
-              <span class="text-[10px] font-mono-num font-bold ${doneCount === 3 ? 'text-emerald-400' : 'text-slate-400'}">${doneCount}/3 Done</span>
-            </div>
-            <div class="grid grid-cols-3 gap-2">
-              <button onclick="toggleSyllabusStage(${c.id}, 'concept')" class="py-1.5 rounded-xl text-[11px] font-bold border transition tap-scale ${c.concept ? 'bg-indigo-600 text-white border-indigo-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">
-                ${c.concept ? '✓ ' : ''}Concept
-              </button>
-              <button onclick="toggleSyllabusStage(${c.id}, 'ncert')" class="py-1.5 rounded-xl text-[11px] font-bold border transition tap-scale ${c.ncert ? 'bg-emerald-500 text-slate-950 border-emerald-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">
-                ${c.ncert ? '✓ ' : ''}NCERT
-              </button>
-              <button onclick="toggleSyllabusStage(${c.id}, 'pyq')" class="py-1.5 rounded-xl text-[11px] font-bold border transition tap-scale ${c.pyq ? 'bg-amber-500 text-slate-950 border-amber-400' : 'bg-slate-900 text-slate-400 border-slate-800'}">
-                ${c.pyq ? '✓ ' : ''}PYQs
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderSessionLogs() {
-      const list = document.getElementById('session-log-list');
-      const todaySessions = (appState.sessions || []).filter(s => s.date === todayISO);
-      document.getElementById('today-sessions-count').innerText = `${todaySessions.length} entries`;
-
-      if (todaySessions.length === 0) {
-        list.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">No focus sessions logged today yet.</p>`;
-        return;
-      }
-
-      list.innerHTML = todaySessions.slice(0, 8).map(s => {
-        const meta = SUBJECTS[s.subject] || SUBJECTS.Physics;
-        return `
-          <div class="flex justify-between items-center bg-slate-900/80 border border-slate-800 px-3 py-2 rounded-xl text-xs">
-            <span class="font-bold text-slate-200">${meta.emoji} ${s.subject}</span>
-            <div class="flex items-center gap-2">
-              <span class="font-mono-num font-bold ${meta.text}">+${s.mins}m</span>
-              <span class="text-[10px] text-slate-500">${s.time}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function switchTab(tab) {
-      vibrate(12);
-      currentTab = tab;
-      ['today', 'analytics', 'focus', 'tests', 'syllabus'].forEach(t => {
-        document.getElementById(`view-${t}`).classList.add('hidden');
-        const nav = document.getElementById(`nav-${t}`);
-        if (nav && t !== 'focus') nav.className = 'flex flex-col items-center gap-1 text-slate-400 tap-scale w-14';
-      });
-      document.getElementById(`view-${tab}`).classList.remove('hidden');
-      const activeNav = document.getElementById(`nav-${tab}`);
-      if (activeNav && tab !== 'focus') activeNav.className = 'flex flex-col items-center gap-1 text-indigo-400 tap-scale w-14';
-      updateFloatingMiniTimerVisibility();
-    }
-
-    function updateFloatingMiniTimerVisibility() {
-      const mini = document.getElementById('floating-mini-timer');
-      if (timerState.isRunning && currentTab !== 'focus') {
-        mini.classList.remove('hidden');
-      } else {
-        mini.classList.add('hidden');
-      }
-    }
-
-    function onUnitTypeChange() {
-      const unit = document.getElementById('habit-unit').value;
-      const targetInput = document.getElementById('habit-target');
-      if (unit === 'mins') targetInput.value = 60;
-      else if (unit === 'Qs') targetInput.value = 50;
-      else targetInput.value = 1;
-    }
-
+    // --- Modals for Adding Goals & Subject Targets ---
     function openAddModal() {
       document.getElementById('add-modal').classList.replace('hidden', 'flex');
       document.getElementById('habit-name').focus();
     }
     function closeAddModal() {
       document.getElementById('add-modal').classList.replace('flex', 'hidden');
-      document.getElementById('add-habit-form').reset();
     }
-
+    function onUnitTypeChange() {
+      const u = document.getElementById('habit-unit').value;
+      const tInput = document.getElementById('habit-target');
+      if (u === 'mins') tInput.value = 60;
+      else if (u === 'Qs') tInput.value = 45;
+      else tInput.value = 1;
+    }
     function addHabit(e) {
       e.preventDefault();
       const name = document.getElementById('habit-name').value.trim();
       const subject = document.getElementById('habit-subject').value;
       const unit = document.getElementById('habit-unit').value;
-      const target = parseInt(document.getElementById('habit-target').value, 10) || 1;
+      const target = Math.max(1, parseInt(document.getElementById('habit-target').value, 10) || 1);
       const icon = document.getElementById('habit-icon').value;
+      if (!name) return;
 
       appState.habits.push({
-        id: Date.now(), name, subject, icon, target, unit, history: { [todayISO]: 0 }
+        id: Date.now(), name, subject, unit, target, icon, history: {}
       });
+      document.getElementById('habit-name').value = '';
       saveState();
-      onTimerSubjectChange();
       closeAddModal();
     }
 
@@ -1987,71 +1970,573 @@
         const meta = SUBJECTS[sub];
         const val = appState.subjectTargets[sub] || 60;
         return `
-          <div class="flex items-center justify-between bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2">
+          <div class="flex items-center justify-between oled-surface px-3.5 py-2 rounded-xl">
             <span class="text-xs font-bold text-white">${meta.emoji} ${meta.label}</span>
             <div class="flex items-center gap-1.5">
-              <input type="number" id="sub-target-${sub}" value="${val}" min="10" max="600" class="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-right text-xs font-bold text-white">
-              <span class="text-xs text-slate-400">mins</span>
+              <input type="number" id="sub-target-${sub}" min="10" max="600" value="${val}" class="w-16 bg-black border border-neutral-800 rounded-lg px-2 py-1 text-right text-xs font-bold text-white font-mono-num">
+              <span class="text-[10px] text-neutral-400">mins</span>
             </div>
           </div>
         `;
       }).join('');
       document.getElementById('subject-goals-modal').classList.replace('hidden', 'flex');
     }
-
     function closeSubjectGoalsModal() {
       document.getElementById('subject-goals-modal').classList.replace('flex', 'hidden');
     }
-
     function saveSubjectTargets() {
       Object.keys(SUBJECTS).forEach(sub => {
         const el = document.getElementById(`sub-target-${sub}`);
-        if (el) appState.subjectTargets[sub] = parseInt(el.value, 10) || 60;
+        if (el) appState.subjectTargets[sub] = Math.max(10, parseInt(el.value, 10) || 60);
       });
       saveState();
       closeSubjectGoalsModal();
     }
 
+    // --- Export / Import Local JSON ---
     function exportData() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState));
+      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.setAttribute("href", dataStr);
-      a.setAttribute("download", `focussync_backup_${todayISO}.json`);
-      document.body.appendChild(a);
+      a.href = url;
+      a.download = `focussync_oled_backup_${todayISO}.json`;
       a.click();
-      a.remove();
+      URL.revokeObjectURL(url);
     }
 
     function importData(event) {
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = e => {
         try {
           const imported = JSON.parse(e.target.result);
           if (imported && imported.habits) {
             appState = imported;
             saveState();
             closeTelegramModal();
-            alert('Backup restored!');
+            alert('✅ Backup restored successfully!');
           }
         } catch (err) {
-          alert('Invalid backup file.');
+          alert('❌ Invalid JSON backup file.');
         }
       };
       reader.readAsText(file);
     }
 
-    // --- Boot Up App ---
-    updateTelegramStatusIndicator();
-    document.getElementById('timer-subject-select').value = timerState.subject || 'Physics';
-    document.getElementById('custom-minutes-input').value = Math.round((timerState.customDurationSec || 2700) / 60);
-    onTimerSubjectChange();
-    if (timerState.habitId) document.getElementById('timer-habit-select').value = timerState.habitId;
-    syncRealWorldElapsedSeconds();
-    startTimerLoop();
-    updateTimerUI();
-    renderAll();
+    // --- Timer Dropdown Helpers ---
+    function populateTimerHabitDropdown() {
+      const sub = document.getElementById('timer-subject-select').value;
+      const hSelect = document.getElementById('timer-habit-select');
+      const matching = appState.habits.filter(h => h.subject === sub && h.unit === 'mins');
+      let html = `<option value="">Auto (${sub} Subject Bar)</option>`;
+      matching.forEach(h => {
+        html += `<option value="${h.id}">${h.name} (${h.history[todayISO] || 0}/${h.target}m)</option>`;
+      });
+      hSelect.innerHTML = html;
+      if (timerState.habitId && matching.some(h => String(h.id) === String(timerState.habitId))) {
+        hSelect.value = String(timerState.habitId);
+      }
+    }
+
+    function onTimerSubjectChange() {
+      timerState.subject = document.getElementById('timer-subject-select').value;
+      timerState.habitId = '';
+      populateTimerHabitDropdown();
+      savePersistentTimerState();
+      updateTimerUI();
+    }
+
+    function updateFloatingMiniTimerVisibility() {
+      const pill = document.getElementById('floating-mini-timer');
+      if (timerState.isRunning && currentTab !== 'focus') {
+        pill.classList.remove('hidden');
+      } else {
+        pill.classList.add('hidden');
+      }
+    }
+
+    // ==================== RENDER FUNCTIONS ====================
+    function renderTopHeader() {
+      document.getElementById('countdown-title-display').innerText = appState.countdown.title || 'Next Target Exam';
+      const targetD = new Date(appState.countdown.targetDate);
+      const nowD = new Date(todayISO);
+      const diffDays = Math.max(0, Math.ceil((targetD - nowD) / (1000 * 60 * 60 * 24)));
+      document.getElementById('countdown-days-display').innerText = diffDays === 0 ? 'Today! 🔥' : `${diffDays} Days Left`;
+
+      const todaySub = appState.subjectMinutesLog[todayISO] || {};
+      const totalTodayMins = Object.values(todaySub).reduce((a, b) => a + b, 0);
+      document.getElementById('total-hours-badge').innerText = `${Math.floor(totalTodayMins / 60)}h ${totalTodayMins % 60}m Today`;
+
+      let totalXP = 0;
+      Object.values(appState.subjectMinutesLog).forEach(dayObj => {
+        totalXP += Object.values(dayObj).reduce((a, b) => a + b, 0) * 2;
+      });
+      appState.habits.forEach(h => {
+        Object.keys(h.history).forEach(d => {
+          if (isGoalDone(h, d)) totalXP += 50;
+        });
+      });
+
+      const level = Math.floor(totalXP / 500) + 1;
+      const xpInLevel = (totalXP % 500) / 5;
+      document.getElementById('level-badge').innerText = `LVL ${level}`;
+      document.getElementById('xp-bar').style.width = `${Math.min(100, xpInLevel)}%`;
+
+      const bestCurrentStreak = appState.habits.reduce((max, h) => Math.max(max, calculateStreak(h)), 0);
+      document.getElementById('top-streak').innerText = `${bestCurrentStreak}d`;
+      document.getElementById('shield-count').innerText = appState.streakShields ?? 2;
+
+      updateTelegramStatusIndicator();
+    }
+
+    function renderDateRibbon() {
+      const container = document.getElementById('date-ribbon');
+      container.innerHTML = last7Days.map(d => {
+        const isSel = d.iso === selectedDateISO;
+        const doneCount = appState.habits.filter(h => isGoalDone(h, d.iso)).length;
+        const allDone = appState.habits.length > 0 && doneCount === appState.habits.length;
+        return `
+          <button onclick="selectDate('${d.iso}')" class="flex flex-col items-center py-2 rounded-2xl border transition tap-scale ${
+            isSel ? 'bg-indigo-600 border-indigo-400 text-white shadow-lg shadow-indigo-600/30' : 'oled-surface text-neutral-400'
+          }">
+            <span class="text-[9px] font-bold uppercase">${d.shortDay}</span>
+            <span class="text-xs font-extrabold font-mono-num mt-0.5">${d.dateNum}</span>
+            <span class="w-1.5 h-1.5 rounded-full mt-1 ${allDone ? 'bg-emerald-400' : doneCount > 0 ? 'bg-indigo-400' : 'bg-neutral-800'}"></span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectDate(iso) {
+      vibrate(12);
+      selectedDateISO = iso;
+      renderAll();
+    }
+
+    function renderTodayView() {
+      renderDateRibbon();
+      const total = appState.habits.length;
+      const done = appState.habits.filter(h => isGoalDone(h, selectedDateISO)).length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      document.getElementById('selected-date-label').innerText =
+        selectedDateISO === todayISO ? "TODAY'S COMPLETION" : `LOG FOR ${selectedDateISO}`;
+      document.getElementById('progress-text').innerText = `${done} / ${total} Goals`;
+      document.getElementById('progress-percent').innerText = `${pct}%`;
+      document.getElementById('progress-ring').setAttribute('stroke-dasharray', `${pct}, 100`);
+
+      document.getElementById('daily-mcq-count').innerText = (appState.dailyMCQs && appState.dailyMCQs[selectedDateISO]) || 0;
+
+      // Subject Master Progress Bars
+      const subBars = document.getElementById('subject-bars-container');
+      const daySubLog = appState.subjectMinutesLog[selectedDateISO] || {};
+      subBars.innerHTML = Object.keys(SUBJECTS).map(sub => {
+        const meta = SUBJECTS[sub];
+        const logged = daySubLog[sub] || 0;
+        const target = appState.subjectTargets[sub] || 60;
+        const p = Math.min(100, Math.round((logged / target) * 100));
+        return `
+          <div class="space-y-1">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-neutral-200">${meta.emoji} ${meta.label}</span>
+              <span class="font-mono-num text-[11px] ${p >= 100 ? 'text-emerald-400 font-extrabold' : 'text-neutral-400'}">${logged} / ${target}m (${p}%)</span>
+            </div>
+            <div class="w-full bg-neutral-900 h-2 rounded-full overflow-hidden">
+              <div class="${meta.bg} h-full progress-bar-fill rounded-full" style="width: ${p}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Spaced Repetition Queue
+      const revList = document.getElementById('revision-queue-list');
+      const dueRevisions = (appState.revisions || []).filter(r => r.nextDueDate <= selectedDateISO);
+      if (dueRevisions.length === 0) {
+        revList.innerHTML = `<p class="text-xs text-neutral-500 py-1">✨ All spaced repetition topics cleared for today!</p>`;
+      } else {
+        revList.innerHTML = dueRevisions.map(r => {
+          const meta = SUBJECTS[r.subject] || SUBJECTS.Biology;
+          const dayInterval = r.intervals[r.stageIdx] || 1;
+          return `
+            <div class="oled-surface rounded-xl p-2.5 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="text-xs px-2 py-0.5 rounded-md font-bold ${meta.soft} ${meta.text} border ${meta.border}">${meta.emoji} Day-${dayInterval}</span>
+                <span class="text-xs font-bold text-white">${r.topic}</span>
+              </div>
+              <button onclick="completeRevisionStep(${r.id})" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[11px] font-bold tap-scale">
+                Recalled ✓
+              </button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Subject Filter Pills
+      const filterContainer = document.getElementById('subject-filter-pills');
+      const allFilters = ['All', ...Object.keys(SUBJECTS)];
+      filterContainer.innerHTML = allFilters.map(f => {
+        const active = f === activeSubjectFilter;
+        const emoji = f === 'All' ? '⚡' : SUBJECTS[f].emoji;
+        return `
+          <button onclick="setSubjectFilter('${f}')" class="px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition tap-scale ${
+            active ? 'bg-indigo-600 text-white' : 'oled-pill text-neutral-400'
+          }">${emoji} ${f}</button>
+        `;
+      }).join('');
+
+      // Habits List
+      const list = document.getElementById('today-habits-list');
+      const filtered = activeSubjectFilter === 'All'
+        ? appState.habits
+        : appState.habits.filter(h => h.subject === activeSubjectFilter);
+
+      list.innerHTML = filtered.map(h => {
+        const meta = SUBJECTS[h.subject] || SUBJECTS.Physics;
+        const cur = h.history[selectedDateISO] || 0;
+        const tgt = h.target || 1;
+        const p = Math.min(100, Math.round((cur / tgt) * 100));
+        const doneGoal = cur >= tgt;
+        const streak = calculateStreak(h);
+        const step = h.unit === 'mins' ? 15 : h.unit === 'Qs' ? 10 : 1;
+
+        return `
+          <div class="glass-card rounded-2xl p-3.5 space-y-2.5 border ${doneGoal ? 'border-emerald-500/40' : 'border-neutral-900'}">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl ${meta.soft} border ${meta.border} flex items-center justify-center ${meta.text}">
+                  <i class="fa-solid ${h.icon || 'fa-bolt'}"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-extrabold uppercase ${meta.text}">${meta.emoji} ${h.subject}</span>
+                    <span class="text-[10px] font-bold text-amber-400 font-mono-num">🔥 ${streak}d</span>
+                  </div>
+                  <h4 class="text-sm font-bold ${doneGoal ? 'line-through text-neutral-400' : 'text-white'}">${h.name}</h4>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                ${h.unit === 'mins' ? `
+                  <button onclick="quickStartHabitTimer(${h.id})" class="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-xs tap-scale" title="Start Focus Timer">
+                    <i class="fa-solid fa-play"></i>
+                  </button>
+                ` : ''}
+                <button onclick="incrementHabitProgress(${h.id}, ${step})" class="px-3 py-1.5 rounded-xl font-extrabold text-xs font-mono-num tap-scale ${
+                  doneGoal ? 'bg-emerald-500 text-black' : 'bg-neutral-900 text-indigo-300 border border-neutral-800'
+                }">
+                  ${doneGoal ? '✓ Done' : `+${step}${h.unit}`}
+                </button>
+                <button onclick="deleteHabit(${h.id})" class="w-7 h-7 rounded-lg text-neutral-600 hover:text-rose-400 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px] font-mono-num text-neutral-400">
+                <span>Progress: ${cur} / ${tgt} ${h.unit}</span>
+                <span>${p}%</span>
+              </div>
+              <div class="w-full bg-neutral-900 h-1.5 rounded-full overflow-hidden">
+                <div class="${doneGoal ? 'bg-emerald-400' : meta.bg} h-full progress-bar-fill" style="width: ${p}%"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setSubjectFilter(sub) {
+      vibrate(12);
+      activeSubjectFilter = sub;
+      renderTodayView();
+    }
+
+    function renderAnalyticsView() {
+      // 7d stats
+      let totalChecks = 0;
+      let totalPossible = appState.habits.length * 7;
+      let totalMins7d = 0;
+
+      last7Days.forEach(d => {
+        appState.habits.forEach(h => {
+          if (isGoalDone(h, d.iso)) totalChecks++;
+        });
+        const daySub = appState.subjectMinutesLog[d.iso] || {};
+        totalMins7d += Object.values(daySub).reduce((a, b) => a + b, 0);
+      });
+
+      const rate7d = totalPossible > 0 ? Math.round((totalChecks / totalPossible) * 100) : 0;
+      const bestStreak = appState.habits.reduce((max, h) => Math.max(max, calculateStreak(h)), 0);
+
+      document.getElementById('stat-7d-rate').innerText = `${rate7d}%`;
+      document.getElementById('stat-7d-hours').innerText = `${(totalMins7d / 60).toFixed(1)}h`;
+      document.getElementById('stat-best-streak').innerText = `${bestStreak}d`;
+      document.getElementById('weekly-avg-badge').innerText = `${rate7d}% Avg`;
+
+      // 28-Day OLED Heatmap
+      const heatmap = document.getElementById('heatmap-grid');
+      heatmap.innerHTML = last28Days.map(d => {
+        const subObj = appState.subjectMinutesLog[d.iso] || {};
+        const mins = Object.values(subObj).reduce((a, b) => a + b, 0);
+        let bgClass = 'bg-neutral-900 border-neutral-800 text-neutral-500';
+        if (mins >= 210) bgClass = 'bg-emerald-400 border-emerald-300 text-black font-extrabold';
+        else if (mins >= 120) bgClass = 'bg-emerald-600 border-emerald-500 text-white font-bold';
+        else if (mins > 0) bgClass = 'bg-emerald-950 border-emerald-800 text-emerald-300';
+
+        return `
+          <div class="h-8 rounded-lg border ${bgClass} flex flex-col items-center justify-center text-[10px] font-mono-num" title="${d.iso}: ${mins} mins">
+            <span>${d.dateNum}</span>
+          </div>
+        `;
+      }).join('');
+
+      // 7-Day Stacked Subject Bars
+      const stackedBars = document.getElementById('stacked-subject-bars');
+      const stackedLabels = document.getElementById('stacked-subject-labels');
+      stackedBars.innerHTML = last7Days.map(d => {
+        const subObj = appState.subjectMinutesLog[d.iso] || {};
+        const totalM = Object.values(subObj).reduce((a, b) => a + b, 0);
+        const maxScale = 300; // 5 hours full height
+        return `
+          <div class="h-full flex flex-col justify-end items-center">
+            <span class="text-[9px] font-mono-num text-neutral-400 mb-1">${(totalM / 60).toFixed(1)}h</span>
+            <div class="w-full bg-neutral-900 rounded-lg overflow-hidden flex flex-col-reverse" style="height: ${Math.min(100, Math.max(8, (totalM / maxScale) * 100))}%">
+              ${Object.keys(SUBJECTS).map(s => {
+                const m = subObj[s] || 0;
+                const pctOfBar = totalM > 0 ? (m / totalM) * 100 : 0;
+                return `<div class="${SUBJECTS[s].bg}" style="height: ${pctOfBar}%"></div>`;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      stackedLabels.innerHTML = last7Days.map(d =>
+        `<span class="text-[10px] font-bold ${d.isToday ? 'text-indigo-400' : 'text-neutral-500'}">${d.shortDay}</span>`
+      ).join('');
+
+      // Weekly Goal Completion Bars
+      const wBars = document.getElementById('weekly-bars');
+      const wLabels = document.getElementById('weekly-labels');
+      wBars.innerHTML = last7Days.map(d => {
+        const done = appState.habits.filter(h => isGoalDone(h, d.iso)).length;
+        const pct = appState.habits.length ? Math.round((done / appState.habits.length) * 100) : 0;
+        return `
+          <div class="h-full flex flex-col justify-end items-center">
+            <span class="text-[9px] font-mono-num text-neutral-400 mb-1">${pct}%</span>
+            <div class="w-full rounded-t-lg ${pct === 100 ? 'bg-emerald-400' : 'bg-indigo-500'} bar-fill" style="height: ${Math.max(8, pct)}%"></div>
+          </div>
+        `;
+      }).join('');
+      wLabels.innerHTML = last7Days.map(d =>
+        `<span class="text-[10px] font-bold ${d.isToday ? 'text-indigo-400' : 'text-neutral-500'}">${d.shortDay}</span>`
+      ).join('');
+
+      // 7-Day Interactive Habit Matrix
+      const matrix = document.getElementById('streak-matrix');
+      matrix.innerHTML = appState.habits.map(h => {
+        const meta = SUBJECTS[h.subject] || SUBJECTS.Physics;
+        return `
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <span class="font-bold text-white">${meta.emoji} ${h.name}</span>
+              <span class="text-amber-400 font-mono-num font-bold">🔥 ${calculateStreak(h)}d</span>
+            </div>
+            <div class="grid grid-cols-7 gap-1.5">
+              ${last7Days.map(d => {
+                const done = isGoalDone(h, d.iso);
+                return `
+                  <button onclick="toggleMatrixCell(${h.id}, '${d.iso}')" class="h-7 rounded-lg font-mono-num text-[10px] font-bold border transition tap-scale ${
+                    done ? `${meta.bg} text-black border-transparent` : 'bg-neutral-950 border-neutral-800 text-neutral-500'
+                  }">
+                    ${d.shortDay[0]}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderSessionLogs() {
+      const todaySessions = (appState.sessions || []).filter(s => s.date === todayISO);
+      document.getElementById('today-sessions-count').innerText = `${todaySessions.length} entries`;
+      const container = document.getElementById('session-log-list');
+      if (todaySessions.length === 0) {
+        container.innerHTML = `<p class="text-xs text-neutral-500">No timer sessions logged today yet.</p>`;
+        return;
+      }
+      container.innerHTML = todaySessions.map(s => {
+        const meta = SUBJECTS[s.subject] || SUBJECTS.Physics;
+        return `
+          <div class="oled-surface rounded-xl px-3 py-2 flex items-center justify-between text-xs">
+            <span class="font-bold text-white">${meta.emoji} ${s.subject}</span>
+            <div class="flex items-center gap-2 font-mono-num">
+              <span class="text-emerald-400 font-bold">+${s.mins}m</span>
+              <span class="text-[10px] text-neutral-500">${s.time}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderTestsView() {
+      const tests = appState.mockTests || [];
+      if (tests.length > 0) {
+        const latest = tests[tests.length - 1];
+        const best = Math.max(...tests.map(t => t.total));
+        const avg = Math.round(tests.reduce((s, t) => s + t.total, 0) / tests.length);
+        document.getElementById('test-latest-score').innerText = `${latest.total}/720`;
+        document.getElementById('test-best-score').innerText = `${best}/720`;
+        document.getElementById('test-avg-score').innerText = `${avg}`;
+      }
+
+      const recent6 = tests.slice(-6);
+      const bars = document.getElementById('test-chart-bars');
+      const labels = document.getElementById('test-chart-labels');
+      bars.innerHTML = recent6.map(t => {
+        const pct = Math.round((t.total / 720) * 100);
+        return `
+          <div class="h-full flex flex-col justify-end items-center">
+            <span class="text-[9px] font-mono-num text-indigo-300 font-bold mb-1">${t.total}</span>
+            <div class="w-full bg-gradient-to-t from-indigo-600 to-emerald-400 rounded-t-lg" style="height: ${Math.max(10, pct)}%"></div>
+          </div>
+        `;
+      }).join('');
+      labels.innerHTML = recent6.map(t =>
+        `<span class="text-[9px] font-bold text-neutral-400 truncate">${t.name}</span>`
+      ).join('');
+
+      // Mistake Notebook List
+      const mistakeList = document.getElementById('mistake-log-list');
+      const mistakes = appState.mistakes || [];
+      if (mistakes.length === 0) {
+        mistakeList.innerHTML = `<p class="text-xs text-neutral-500">No mistakes logged yet. Tap "+ Log Error" after reviewing a test!</p>`;
+      } else {
+        mistakeList.innerHTML = mistakes.map(m => {
+          const meta = SUBJECTS[m.subject] || SUBJECTS.Physics;
+          return `
+            <div class="oled-surface rounded-xl p-3 flex items-start justify-between gap-2">
+              <div class="space-y-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] font-extrabold px-2 py-0.5 rounded ${meta.soft} ${meta.text}">${meta.emoji} ${m.subject}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/15 text-rose-300">${m.type}</span>
+                </div>
+                <p class="text-xs text-neutral-200 font-medium leading-snug">${m.note}</p>
+              </div>
+              <button onclick="deleteMistakeEntry(${m.id})" class="text-neutral-600 hover:text-rose-400 text-xs px-1">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Test History Cards
+      const hist = document.getElementById('test-history-list');
+      hist.innerHTML = [...tests].reverse().map(t => `
+        <div class="glass-card rounded-2xl p-3.5 flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 class="text-sm font-extrabold text-white">${t.name}</h4>
+              <span class="text-[10px] text-neutral-500 font-mono-num">${t.date}</span>
+            </div>
+            <div class="flex gap-3 mt-1 text-[11px] font-mono-num">
+              <span class="text-indigo-400">Phy: ${t.phy}</span>
+              <span class="text-cyan-400">Chem: ${t.chem}</span>
+              <span class="text-emerald-400">Bio: ${t.bio}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <span class="text-base font-extrabold text-emerald-400 font-mono-num">${t.total}/720</span>
+            <button onclick="deleteMockTest(${t.id})" class="text-neutral-600 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderSyllabusView() {
+      const chapters = appState.syllabus || [];
+      const totalChecks = chapters.length * 3;
+      let doneChecks = 0;
+      chapters.forEach(c => {
+        if (c.concept) doneChecks++;
+        if (c.ncert) doneChecks++;
+        if (c.pyq) doneChecks++;
+      });
+      const pct = totalChecks > 0 ? Math.round((doneChecks / totalChecks) * 100) : 0;
+
+      document.getElementById('syllabus-total-pct').innerText = `${pct}%`;
+      document.getElementById('syllabus-master-bar').style.width = `${pct}%`;
+      document.getElementById('syllabus-count-summary').innerText = `${chapters.length} Chapters Tracked (${doneChecks}/${totalChecks} Milestones)`;
+
+      const filtered = chapters.filter(c => c.subject === activeSyllabusSubject);
+      const list = document.getElementById('syllabus-chapters-list');
+      list.innerHTML = filtered.map(c => {
+        const meta = SUBJECTS[c.subject] || SUBJECTS.Biology;
+        return `
+          <div class="glass-card rounded-2xl p-3.5 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <span class="text-[10px] font-extrabold uppercase ${meta.text}">${meta.emoji} ${c.subject}</span>
+              <h4 class="text-xs font-bold text-white truncate">${c.name}</h4>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="toggleSyllabusStage(${c.id}, 'concept')" class="px-2 py-1 rounded-lg text-[10px] font-bold border tap-scale ${
+                c.concept ? 'bg-indigo-500 text-white border-indigo-400' : 'bg-neutral-950 text-neutral-500 border-neutral-800'
+              }">Concept</button>
+              <button onclick="toggleSyllabusStage(${c.id}, 'ncert')" class="px-2 py-1 rounded-lg text-[10px] font-bold border tap-scale ${
+                c.ncert ? 'bg-cyan-400 text-black border-cyan-300' : 'bg-neutral-950 text-neutral-500 border-neutral-800'
+              }">NCERT</button>
+              <button onclick="toggleSyllabusStage(${c.id}, 'pyq')" class="px-2 py-1 rounded-lg text-[10px] font-bold border tap-scale ${
+                c.pyq ? 'bg-emerald-400 text-black border-emerald-300' : 'bg-neutral-950 text-neutral-500 border-neutral-800'
+              }">PYQs</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tab) {
+      vibrate(12);
+      currentTab = tab;
+      const tabs = ['today', 'analytics', 'focus', 'tests', 'syllabus'];
+      tabs.forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const nav = document.getElementById(`nav-${t}`);
+        if (t === tab) {
+          view.classList.remove('hidden');
+          if (t !== 'focus') nav.className = 'flex flex-col items-center gap-1 text-indigo-400 tap-scale w-14';
+        } else {
+          view.classList.add('hidden');
+          if (t !== 'focus') nav.className = 'flex flex-col items-center gap-1 text-neutral-500 tap-scale w-14';
+        }
+      });
+      updateFloatingMiniTimerVisibility();
+      renderAll();
+    }
+
+    function renderAll() {
+      renderTopHeader();
+      renderTodayView();
+      renderAnalyticsView();
+      renderSessionLogs();
+      renderTestsView();
+      renderSyllabusView();
+    }
+
+    // ==================== INITIALIZE APP ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('timer-subject-select').value = timerState.subject || 'Physics';
+      document.getElementById('custom-minutes-input').value = Math.round((timerState.customDurationSec || 2700) / 60);
+      populateTimerHabitDropdown();
+      syncRealWorldElapsedSeconds();
+      updateTimerUI();
+      startTimerLoop();
+      renderAll();
+    });
   </script>
 </body>
 </html>
